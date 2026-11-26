@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+name: ci
+
+on:
+  push:
+    branches: [dev, 'feat/**', 'fix/**', 'chore/**', 'docs/**']
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout the app repository (docs sync source)
+        run: git clone --depth 1 https://github.com/kluii/app "${{ github.workspace }}/../klui"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Docs sync check (site content must match the app tag)
+        run: node scripts/sync-docs.mjs --from ../klui --tag v2.0.0 --check
+
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:links
+      - run: npm run test:a11y
+      - run: npm run test:claims
+      - run: npm run lint:content
+      - run: npm run test:perf
+
+      - name: Upload dist artifact (branch preview)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.ref_name }}
+          path: dist/
+          retention-days: 7
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Serve the built site
+        run: npx astro preview --port 4321 & echo $! > /tmp/preview.pid
+
+      - name: Wait for the preview
+        run: |
+          for i in $(seq 1 30); do
+            if node -e "fetch('http://localhost:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+
+      - name: Lighthouse (desktop preset, cold cache)
+        run: |
+          npx lighthouse http://localhost:4321 --preset=desktop \
+            --chrome-flags="--headless --no-sandbox" \
+            --output=json --output-path=./lh.json --quiet
+
+      - name: Assert Lighthouse budgets
+        run: node scripts/check-lighthouse.mjs lh.json
+
+      - name: Stop the preview
+        run: kill $(cat /tmp/preview.pid) || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lh.json
+          retention-days: 30
