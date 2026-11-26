@@ -1,0 +1,20 @@
+---
+title: 'Limites'
+description: 'Ce que Klui 2.0 ne fait pas : pas de pièces jointes, pas de vue calendrier, pas d’application mobile, pas de présence. Versionné avec la release.'
+---
+
+import { CLAIMS } from '../../data/claims.ts';
+
+# Limites
+
+Ce que Klui 2.0 ne fait pas. Chaque ligne est vraie pour la version documentée par ce
+site. Quand une release retire une limite, la ligne est retirée dans la même release et
+le journal des versions le dit.
+
+<ul>
+  {CLAIMS.limits.value.map((limit) => (
+    <li>{limit}</li>
+  ))}
+</ul>
+
+Si l’une de ces lignes bloque, Klui n’est pas encore le bon outil.

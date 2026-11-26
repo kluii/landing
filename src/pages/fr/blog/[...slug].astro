@@ -1,0 +1,22 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BlogPost from '../../../components/BlogPost.astro';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog')) as CollectionEntry<'blog'>[];
+  return posts
+    .filter((p: CollectionEntry<'blog'>) =>
+      p.data.lang === 'fr' && (import.meta.env.PROD ? !p.data.draft : true),
+    )
+    .map((post: CollectionEntry<'blog'>) => ({
+      params: { slug: post.data.version.replace(/\./g, '-') },
+      props: { id: post.id },
+    }));
+}
+
+const { id } = Astro.props as { id: string };
+---
+
+<BlogPost lang="fr" id={id} />

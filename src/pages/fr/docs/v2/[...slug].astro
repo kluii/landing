@@ -1,0 +1,39 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// French site-only docs (L3-04): /fr/docs/v2/<slug> renders src/site-docs/fr/*.md.
+// Snippet and claim markers are replaced here from the single constants, same as
+// the sync does for the EN copies.
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import Prose from '../../../../layouts/Prose.astro';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..', '..');
+
+export async function getStaticPaths() {
+  const pages = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
+  return pages.map((p: CollectionEntry<'docsFr'>) => ({
+    params: { slug: p.id },
+    props: { id: p.id },
+  }));
+}
+
+const { id } = Astro.props as { id: string };
+const all = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
+const entry = all.find((p: CollectionEntry<'docsFr'>) => p.id === id)!;
+const { Content } = await render(entry);
+
+const enTwin = existsSync(join(ROOT, 'src', 'site-docs', `${id}.md`));
+---
+
+<Prose
+  title={entry.data.title}
+  description={entry.data.description}
+  path={`/fr/docs/v2/${id}`}
+  lang="fr"
+  enPath={enTwin ? `/docs/v2/${id}` : undefined}
+>
+  <Content />
+</Prose>

@@ -63,7 +63,8 @@ for (const file of htmlFiles) {
       // http://localhost:8080 in docs prose is the app's own local URL in an instruction,
       // not a site link. Everywhere else, non-TLS and localhost links are broken.
       const isLocalInstruction =
-        rel.startsWith('docs/') && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(raw);
+        (rel.startsWith('docs/') || rel.startsWith('fr/docs/')) &&
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(raw);
       if (!isLocalInstruction) {
         if (raw.startsWith('http://')) broken.push(`${rel}: non-TLS external URL ${raw}`);
         if (raw.includes('localhost')) broken.push(`${rel}: localhost URL ${raw}`);

@@ -1,0 +1,117 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Simple prose layout for hand-written markdown pages rendered outside Starlight
+// (the French site-only docs, L3-04).
+import Base from './Base.astro';
+import Nav from '../components/Nav.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  lang: 'en' | 'fr';
+  frPath?: string | undefined;
+  enPath?: string | undefined;
+}
+
+const { title, description, path, lang, frPath, enPath } = Astro.props;
+---
+
+<Base
+  title={title}
+  description={description}
+  path={path}
+  lang={lang}
+  ogType="article"
+  frPath={frPath}
+  enPath={enPath}
+>
+  <Nav lang={lang} />
+  <main id="main" class="prose-page">
+    <h1 class="prose-title">{title}</h1>
+    <div class="prose-body">
+      <slot />
+    </div>
+  </main>
+</Base>
+
+<style>
+  .prose-page {
+    max-width: var(--prose);
+    margin: 0 auto;
+    padding: var(--section-pad) 24px;
+  }
+
+  .prose-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--tracking-h1);
+  }
+
+  .prose-body {
+    margin-top: 32px;
+    font-size: var(--text-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .prose-body :global(h2) {
+    margin-top: 40px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-h2);
+  }
+
+  .prose-body :global(p) {
+    margin-top: 16px;
+  }
+
+  .prose-body :global(ul),
+  .prose-body :global(ol) {
+    margin-top: 16px;
+    padding-inline-start: 24px;
+  }
+
+  .prose-body :global(li + li) {
+    margin-top: 8px;
+  }
+
+  .prose-body :global(a) {
+    color: var(--ink);
+    text-underline-offset: 4px;
+  }
+
+  .prose-body :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  .prose-body :global(:not(pre) > code) {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inline);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .prose-body :global(pre) {
+    margin-top: 16px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    line-height: var(--lh-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .prose-body :global(pre code) {
+    background: none;
+    border: none;
+  }
+</style>

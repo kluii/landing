@@ -6,43 +6,54 @@ import CopyButton from './CopyButton.astro';
 import { CLAIMS } from '../data/claims.ts';
 import { INSTALL_COMMANDS } from '../data/snippets.ts';
 import { LINKS } from '../data/links.ts';
+import { LANDING, fill } from '../data/copy.ts';
+import type { Lang } from '../data/copy.ts';
 import pkg from '../../package.json';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const copy = LANDING[lang];
 
 // The announcement pill links to the shipped release note for the documented version
 // when it exists, otherwise to the changelog index — never to a dead post URL.
 type Post = CollectionEntry<'blog'>;
-const posts = await getCollection('blog');
+const posts = (await getCollection('blog')) as Post[];
 const release = posts.find(
   (p: Post) => !p.data.draft && p.data.version === CLAIMS.appVersion.value,
 );
-const pillHref = release ? `/blog/${release.data.version.replace(/\./g, '-')}` : '/blog';
+const blogBase = lang === 'fr' ? '/fr/blog' : '/blog';
+const pillHref = release ? `${blogBase}/${release.data.version.replace(/\./g, '-')}` : blogBase;
 const demoUrl = LINKS.demo;
+const t = (s: string) =>
+  fill(s, {
+    appVersion: CLAIMS.appVersion.value,
+    tools: CLAIMS.tools.value,
+    version: pkg.version,
+  });
 ---
 
 <section class="hero">
   <a class="announce mono" href={pillHref}>
-    v{CLAIMS.appVersion.value} — close-out summaries, {CLAIMS.tools.value} MCP tools<span class="arrow" aria-hidden="true">→</span>
+    {t(copy.pill)}<span class="arrow" aria-hidden="true">→</span>
   </a>
-  <h1 class="hero-title">A kanban for projects that end.</h1>
-  <p class="hero-lead">
-    Klui is a fast, self-hosted board where a link is the invite, agents read and write
-    through MCP, and every project closes with a summary you can hand over.
-  </p>
+  <h1 class="hero-title">{copy.heroH1}</h1>
+  <p class="hero-lead">{copy.heroLead}</p>
   <div class="hero-actions">
     <div class="hero-copy">
-      <CopyButton text={INSTALL_COMMANDS} label="Copy the install command" />
+      <CopyButton text={INSTALL_COMMANDS} label={copy.heroCopy} />
     </div>
     {
       demoUrl !== '' && (
         <a class="btn-ghost" href={demoUrl} rel="noopener" target="_blank">
-          Open the live demo board<span class="arrow" aria-hidden="true"> →</span>
+          {copy.heroDemo}<span class="arrow" aria-hidden="true"> →</span>
         </a>
       )
     }
   </div>
-  <p class="hero-spec mono">
-    v{pkg.version} · AGPL-3.0 · self-hosted · {CLAIMS.tools.value} MCP tools
-  </p>
+  <p class="hero-spec mono">{t(copy.heroSpec)}</p>
 </section>
 
 <style>

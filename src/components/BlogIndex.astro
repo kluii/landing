@@ -1,0 +1,149 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Changelog index, one markup for both languages (L3-04); copy from src/data/copy.ts.
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import { LINKS } from '../data/links.ts';
+import { BLOG } from '../data/copy.ts';
+import type { Lang } from '../data/copy.ts';
+
+interface Props {
+  lang: Lang;
+}
+
+type Post = CollectionEntry<'blog'>;
+const { lang } = Astro.props;
+const copy = BLOG[lang];
+const blogBase = lang === 'fr' ? '/fr/blog' : '/blog';
+const slugOf = (p: Post) => p.data.version.replace(/\./g, '-');
+const posts = ((await getCollection('blog')) as Post[])
+  .filter((p: Post) => p.data.lang === lang && (import.meta.env.PROD ? !p.data.draft : true))
+  .sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Base
+  title={copy.metaTitle}
+  description={copy.metaDescription}
+  path={blogBase}
+  lang={lang}
+  ogType="article"
+  frPath={lang === 'en' ? '/fr/blog' : undefined}
+  enPath={lang === 'fr' ? '/blog' : undefined}
+>
+  <Nav lang={lang} />
+  <main id="main" class="page">
+    <h1 class="page-title">{copy.title}</h1>
+    <p class="page-lead">{copy.lead}</p>
+    {
+      posts.length === 0 ? (
+        <p class="empty">{copy.empty}</p>
+      ) : (
+        <ol class="post-list">
+          {posts.map((post: Post) => (
+            <li>
+              <a href={`${blogBase}/${slugOf(post)}`} class="post-link">
+                <span class="post-meta mono">
+                  {post.data.version ?? ''} · {post.data.date.toISOString().slice(0, 10)}
+                </span>
+                <span class="post-title">{post.data.title}</span>
+                <span class="post-desc">{post.data.description}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+    <p class="mono footnote">
+      <a href={LINKS.github + '/releases'} rel="noopener">{copy.footnote} →</a>
+    </p>
+  </main>
+</Base>
+
+<style>
+  .page {
+    max-width: var(--prose);
+    margin: 0 auto;
+    padding: var(--section-pad) 24px;
+  }
+
+  .page-title {
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--tracking-h1);
+  }
+
+  .page-lead {
+    margin-top: 16px;
+    color: var(--ink-muted);
+    font-size: var(--text-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .empty {
+    margin-top: 32px;
+    color: var(--ink-subtle);
+  }
+
+  .post-list {
+    list-style: none;
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .post-list li {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-link {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 4px 24px;
+    padding: 24px 0;
+    text-decoration: none;
+  }
+
+  .post-meta {
+    grid-row: span 2;
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .post-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    color: var(--ink);
+  }
+
+  .post-desc {
+    color: var(--ink-muted);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+
+  .post-link:hover .post-title {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .footnote {
+    margin-top: 32px;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  @media (max-width: 640px) {
+    .post-link {
+      grid-template-columns: 1fr;
+    }
+
+    .post-meta {
+      grid-row: auto;
+    }
+  }
+</style>

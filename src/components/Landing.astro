@@ -1,0 +1,420 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The landing, one markup for both languages (L3-04); all copy comes from src/data/copy.ts.
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Hero from './Hero.astro';
+import GlyphGrid from './GlyphGrid.astro';
+import Plate from './Plate.astro';
+import BoardMock from './BoardMock.astro';
+import Section from './Section.astro';
+import CodeBlock from './CodeBlock.astro';
+import ArrowLink from './ArrowLink.astro';
+import CopyButton from './CopyButton.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { INSTALL_COMMANDS, MCP_CONFIG } from '../data/snippets.ts';
+import { PLATE_CAPTION, CLOSE_OUT } from '../data/mock.ts';
+import { LANDING, fill } from '../data/copy.ts';
+import type { Lang } from '../data/copy.ts';
+import pkg from '../../package.json';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const copy = LANDING[lang];
+const values = {
+  appVersion: CLAIMS.appVersion.value,
+  tools: CLAIMS.tools.value,
+  installInstance: CLAIMS.installInstance.value,
+  version: pkg.version,
+};
+const t = (s: string) => fill(s, values);
+---
+
+<Base
+  title={copy.metaTitle}
+  description={copy.metaDescription}
+  path={lang === 'fr' ? '/fr/' : '/'}
+  lang={lang}
+  frPath={lang === 'en' ? '/fr/' : undefined}
+  enPath={lang === 'fr' ? '/' : undefined}
+>
+  <Nav lang={lang} />
+  <main id="main">
+    <div class="hero-zone">
+      <GlyphGrid />
+      <Hero lang={lang} />
+    </div>
+
+    <Plate caption={PLATE_CAPTION}>
+      <BoardMock />
+    </Plate>
+
+    <Section>
+      <h2 class="sr-only">{copy.srWhy}</h2>
+      <div class="three-lines">
+        {
+          copy.lines.map((line) => (
+            <div class="line-row">
+              <div>
+                <h3 class="line-claim">{line.claim}</h3>
+                <p class="line-body" set:html={t(line.body)} />
+              </div>
+              <ArrowLink href={line.href}>{line.link}</ArrowLink>
+            </div>
+          ))
+        }
+      </div>
+    </Section>
+
+    <Section title={copy.installTitle}>
+      <div class="install-grid">
+        <CodeBlock code={INSTALL_COMMANDS} lang="bash" copyLabel={copy.heroCopy} />
+        <div class="install-steps">
+          {copy.installSteps.map((step) => <p set:html={t(step)} />)}
+          <p class="install-caption mono" set:html={t(copy.installCaption)} />
+          <ArrowLink href={copy.quickstartHref}>{copy.quickstartLink}</ArrowLink>
+        </div>
+      </div>
+    </Section>
+
+    <Section title={copy.endTitle}>
+      <div class="end-grid">
+        <p class="end-copy" set:html={t(copy.endCopy)} />
+        <div class="closeout reveal">
+          <p class="closeout-title">{CLOSE_OUT.title}</p>
+          <p class="closeout-outcome mono">{CLOSE_OUT.outcome}</p>
+          <div class="closeout-cols">
+            <div>
+              <h3 class="closeout-h">Done</h3>
+              <ul>
+                {CLOSE_OUT.done.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h3 class="closeout-h">Remaining</h3>
+              <ul>
+                {CLOSE_OUT.remaining.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h3 class="closeout-h">People</h3>
+              <p class="mono closeout-people">{CLOSE_OUT.people}</p>
+            </div>
+          </div>
+          <pre class="closeout-rhythm" aria-label="Events per week, as bars">{CLOSE_OUT.rhythm}</pre>
+        </div>
+        <ArrowLink href={copy.closeoutHref}>{copy.closeoutLink}</ArrowLink>
+      </div>
+    </Section>
+
+    <Section title={copy.agentsTitle}>
+      <div class="agents-grid">
+        <div>
+          <p set:html={t(copy.agentsCopy)} />
+          <div class="agents-links">
+            <ArrowLink href="/docs/v2/mcp">{copy.agentsLinkA}</ArrowLink>
+            <ArrowLink href="/docs/v2/features/agents">{copy.agentsLinkB}</ArrowLink>
+          </div>
+        </div>
+        <CodeBlock code={MCP_CONFIG} lang="json" copyLabel={copy.copyConfig} />
+      </div>
+      <p class="section-footnote mono" set:html={t(copy.agentsFootnote)} />
+    </Section>
+
+    <Section title={copy.limitsTitle}>
+      <ul class="limits-list">
+        {CLAIMS.limits.value.map((limit) => <li class="limit-row">{limit}</li>)}
+      </ul>
+      <p class="limits-close">{copy.limitsClose}</p>
+    </Section>
+
+    <section class="final-cta reveal">
+      <h2 class="final-title">{copy.finalTitle}</h2>
+      <div class="final-copy">
+        <CopyButton text={INSTALL_COMMANDS} label={copy.heroCopy} />
+      </div>
+      <p class="final-note">{copy.finalNote}</p>
+    </section>
+  </main>
+</Base>
+
+<script>
+  // One reveal per section: opacity + 8px, 500ms, once. Only enabled when the browser
+  // supports IntersectionObserver and the user allows motion; without JS everything is
+  // already visible.
+  const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (motionOk && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('js-motion');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.15 },
+    );
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  }
+</script>
+
+<style>
+  .hero-zone {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .three-lines {
+    margin-top: 8px;
+  }
+
+  .line-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .line-row:first-child {
+    border-top: none;
+  }
+
+  .line-claim {
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--tracking-h3);
+  }
+
+  .line-body {
+    margin-top: 8px;
+    max-width: 60ch;
+    color: var(--ink-muted);
+  }
+
+  .install-grid,
+  .end-grid,
+  .agents-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .install-steps p + p {
+    margin-top: 12px;
+  }
+
+  .install-steps code,
+  .end-copy code {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inline);
+    padding: 0 5px;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .install-caption {
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .end-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .end-copy {
+    color: var(--ink-muted);
+    max-width: 46ch;
+  }
+
+  .closeout {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    padding: 20px;
+  }
+
+  .closeout-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--tracking-h2);
+  }
+
+  .closeout-outcome {
+    margin-top: 8px;
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    color: var(--ink-muted);
+  }
+
+  .closeout-cols {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .closeout-h {
+    font-size: var(--text-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--tracking-label);
+    color: var(--ink-subtle);
+  }
+
+  .closeout-cols ul {
+    margin-top: 8px;
+    padding-left: 16px;
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+
+  .closeout-cols li + li {
+    margin-top: 4px;
+  }
+
+  .closeout-people {
+    margin-top: 8px;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-muted);
+  }
+
+  .closeout-rhythm {
+    margin-top: 16px;
+    overflow-x: auto;
+    font-size: var(--text-mono);
+    line-height: var(--lh-mono);
+    color: var(--ink);
+  }
+
+  .agents-links {
+    margin-top: 24px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .limits-list {
+    margin-top: 8px;
+    list-style: none;
+    max-width: 60ch;
+  }
+
+  .limit-row {
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .limit-row:first-child {
+    border-top: none;
+  }
+
+  .limits-close {
+    margin-top: 24px;
+    color: var(--ink-muted);
+  }
+
+  .final-cta {
+    border-top: 1px solid var(--border);
+    padding: var(--section-pad-lg) 24px;
+    text-align: center;
+  }
+
+  .final-title {
+    font-size: var(--text-display-sm);
+    line-height: var(--lh-display-sm);
+    letter-spacing: var(--tracking-h1);
+  }
+
+  .final-copy {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .final-copy :global(.copy-btn) {
+    display: none;
+    align-items: center;
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    cursor: pointer;
+  }
+
+  html.js .final-copy :global(.copy-btn) {
+    display: inline-flex;
+  }
+
+  .final-copy :global(.copy-btn:hover) {
+    background-color: var(--primary-hover);
+  }
+
+  .final-note {
+    margin-top: 16px;
+    color: var(--ink-subtle);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+
+  html.js-motion .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  html.js-motion .reveal.revealed {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--reveal-duration) var(--reveal-ease),
+      transform var(--reveal-duration) var(--reveal-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js-motion .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .install-grid,
+    .end-grid,
+    .agents-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .line-row {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 12px;
+    }
+
+    .closeout-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

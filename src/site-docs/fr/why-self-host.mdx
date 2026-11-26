@@ -1,0 +1,24 @@
+---
+title: 'Pourquoi l’auto-hébergement'
+description: 'Une image, un fichier compose, AGPL-3.0, toutes les fonctionnalités incluses. Pas de clé de licence, pas de fonction verrouillée, vos données sur votre machine.'
+---
+
+import { CLAIMS } from '../../data/claims.ts';
+
+# Pourquoi l’auto-hébergement
+
+Klui est distribué sous forme d’une seule image de conteneur, Postgres étant inclus dans
+le fichier compose. Toutes les fonctionnalités — participation anonyme par lien, clés
+d’agent via MCP, résumés de clôture, export et import en markdown — sont incluses. Il
+n’y a pas de clé de licence ni de fonction verrouillée, parce que le code est en
+AGPL-3.0 : vous pouvez le lire, l’exécuter, le modifier et le redistribuer aux mêmes
+conditions.
+
+Vos tableaux vivent sur votre machine, sous votre politique de sauvegarde, avec la
+rétention que vous configurez (`KLUI_RETENTION_EVENTS_DAYS`, {CLAIMS.retentionDays.value} jours par défaut). L’offre hébergée,
+quand elle existera, sera annoncée dans le journal des versions ; l’auto-hébergement ne
+sera jamais la voie de seconde classe.
+
+Voir le [démarrage rapide](/fr/docs/v2/quickstart) pour l’exécuter, et
+[déploiement](/docs/v2/deployment) pour la sauvegarde, la restauration et les montées
+de version.

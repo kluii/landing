@@ -39,4 +39,14 @@ const legal = defineCollection({
   }),
 });
 
-export const collections = { docs, blog, legal };
+// French site-only docs (L3-04): hand-written twins of src/site-docs/*.md, served
+// at /fr/docs/v2/<slug>. Synced app docs stay EN-only (documented exception).
+const docsFr = defineCollection({
+  loader: glob({ pattern: '**/*.md?(x)', base: './src/site-docs/fr' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+  }),
+});
+
+export const collections = { docs, blog, legal, docsFr };
