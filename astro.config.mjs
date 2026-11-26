@@ -37,7 +37,10 @@ export default defineConfig({
       pagination: false,
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
       components: {
+        Banner: './src/components/starlight/Banner.astro',
         Footer: './src/components/starlight/Footer.astro',
+        Sidebar: './src/components/starlight/Sidebar.astro',
+        ThemeSelect: './src/components/starlight/ThemeSelect.astro',
       },
       head: [
         { tag: 'meta', attrs: { property: 'og:image', content: `${site}/og/home.png` } },
