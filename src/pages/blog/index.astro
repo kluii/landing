@@ -7,9 +7,9 @@ import Nav from '../../components/Nav.astro';
 import { LINKS } from '../../data/links.ts';
 
 type Post = CollectionEntry<'blog'>;
-const posts = (await getCollection('blog')).filter(
-  (p: Post) => !p.data.draft && p.data.lang === 'en',
-).sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
+const posts = (await getCollection('blog'))
+  .filter((p: Post) => p.data.lang === 'en' && (import.meta.env.PROD ? !p.data.draft : true))
+  .sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
 <Base
@@ -33,7 +33,7 @@ const posts = (await getCollection('blog')).filter(
         <ol class="post-list">
           {posts.map((post: Post) => (
             <li>
-              <a href={`/blog/${post.id}`} class="post-link">
+              <a href={`/blog/${post.data.version.replace(/\./g, '-')}`} class="post-link">
                 <span class="post-meta mono">
                   {post.data.version ?? ''} · {post.data.date.toISOString().slice(0, 10)}
                 </span>

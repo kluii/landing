@@ -8,14 +8,14 @@ import { LINKS } from '../../data/links.ts';
 export async function GET(_context: APIContext) {
   type Post = CollectionEntry<'blog'>;
   const posts = (await getCollection('blog'))
-    .filter((p: Post) => !p.data.draft && p.data.lang === 'en')
+    .filter((p: Post) => p.data.lang === 'en' && (import.meta.env.PROD ? !p.data.draft : true))
     .sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
   const items = posts
     .map(
       (p: Post) => `    <item>
       <title>${escapeXml(p.data.title)}</title>
-      <link>${LINKS.site}/blog/${p.id}</link>
-      <guid>${LINKS.site}/blog/${p.id}</guid>
+      <link>${LINKS.site}/blog/${p.data.version.replace(/\./g, '-')}</link>
+      <guid>${LINKS.site}/blog/${p.data.version.replace(/\./g, '-')}</guid>
       <pubDate>${p.data.date.toUTCString()}</pubDate>
       <description>${escapeXml(p.data.description)}</description>
     </item>`,

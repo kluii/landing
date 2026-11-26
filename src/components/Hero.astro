@@ -15,7 +15,7 @@ const posts = await getCollection('blog');
 const release = posts.find(
   (p: Post) => !p.data.draft && p.data.version === CLAIMS.appVersion.value,
 );
-const pillHref = release ? `/blog/${release.id}` : '/blog';
+const pillHref = release ? `/blog/${release.data.version.replace(/\./g, '-')}` : '/blog';
 const demoUrl = LINKS.demo;
 ---
 
