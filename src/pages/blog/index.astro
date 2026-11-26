@@ -1,13 +1,15 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-only
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Nav from '../../components/Nav.astro';
 import { LINKS } from '../../data/links.ts';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en')).sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
+type Post = CollectionEntry<'blog'>;
+const posts = (await getCollection('blog')).filter(
+  (p: Post) => !p.data.draft && p.data.lang === 'en',
+).sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
 <Base
@@ -29,7 +31,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lan
         <p class="empty">No releases yet. The first release note appears with 2.0.</p>
       ) : (
         <ol class="post-list">
-          {posts.map((post) => (
+          {posts.map((post: Post) => (
             <li>
               <a href={`/blog/${post.id}`} class="post-link">
                 <span class="post-meta mono">

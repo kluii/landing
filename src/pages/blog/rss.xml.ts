@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // /blog/rss.xml — one feed, same posts as the index, same order (changelog.md §3).
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { LINKS } from '../../data/links.ts';
 
 export async function GET(_context: APIContext) {
-  const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en')).sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-  );
+  type Post = CollectionEntry<'blog'>;
+  const posts = (await getCollection('blog'))
+    .filter((p: Post) => !p.data.draft && p.data.lang === 'en')
+    .sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
   const items = posts
     .map(
-      (p) => `    <item>
+      (p: Post) => `    <item>
       <title>${escapeXml(p.data.title)}</title>
       <link>${LINKS.site}/blog/${p.id}</link>
       <guid>${LINKS.site}/blog/${p.id}</guid>
