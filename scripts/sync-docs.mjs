@@ -168,25 +168,34 @@ function frontmatter(rel, md, version) {
 
 // Derives the claims artifacts from the app checkout (the app publishes its own at release;
 // pre-release the sync derives them from the app's docs so every number stays greppable in the app).
-function deriveArtifacts(version) {
-  const out = {};
-  out['app-version.txt'] = `${version}\n`;
-
+function parseTools() {
   const mcp = readFileSync(join(APP_DOCS, 'mcp.md'), 'utf8');
   const toolsSection = mcp.split(/^##\s/m).find((s) => s.startsWith('3. Tools'));
   if (!toolsSection) fail('could not find the tool table in docs/mcp.md §3');
-  const tools = [...toolsSection.matchAll(/^\|\s*`([a-z_]+)`\s*\|/gm)].map((m) => m[1]);
-  out['tools.json'] = `${JSON.stringify(
-    { count: tools.length, tools, source: 'klui/docs/mcp.md §3 tool table', app_version: version },
-    null,
-    2,
-  )}\n`;
+  // Greedy args cell: the app's table has an unescaped pipe inside export_board's args.
+  return [...toolsSection.matchAll(/^\|\s*`([a-z_]+)`\s*\|(.*)\|\s*$/gm)].map((m) => ({
+    name: m[1],
+    args: m[2].trim().replace(/`/g, ''),
+  }));
+}
 
+function parseEnvVars() {
   const deployment = readFileSync(join(APP_DOCS, 'deployment.md'), 'utf8');
   const vars = {};
   for (const m of deployment.matchAll(/^\|\s*`([A-Z0-9_]+)`\s*\|\s*([^|]+)\|/gm)) {
     vars[m[1]] = m[2].trim().replace(/`/g, '');
   }
+  return vars;
+}
+
+function deriveArtifacts(version, tools, vars) {
+  const out = {};
+  out['app-version.txt'] = `${version}\n`;
+  out['tools.json'] = `${JSON.stringify(
+    { count: tools.length, tools, source: 'klui/docs/mcp.md §3 tool table', app_version: version },
+    null,
+    2,
+  )}\n`;
   out['env.json'] = `${JSON.stringify(
     { vars, source: 'klui/docs/deployment.md env table', app_version: version },
     null,
@@ -199,6 +208,45 @@ function deriveArtifacts(version) {
   if (installTime) out['install-time.txt'] = readFileSync(join(FROM, installTime), 'utf8');
 
   return out;
+}
+
+// Generated reference pages (L2-05, L2-06), rendered from the parsed artifacts so the page
+// can never drift from tools.json/env.json. Pipes inside cells are escaped for markdown.
+function referencePages(version, tools, vars) {
+  const minor = version.split('.').slice(0, 2).join('.');
+  const fm = (title, description, order) =>
+    [
+      '---',
+      `title: ${yamlQuote(title)}`,
+      `description: ${yamlQuote(description)}`,
+      'sidebar:',
+      `  order: ${order}`,
+      'generated: true',
+      `app_version: ${yamlQuote(version)}`,
+      '---',
+      '',
+    ].join('\n');
+  const envMd =
+    fm(
+      'Environment variables',
+      `Every KLUI_* variable with its default, generated from the app at ${version}.`,
+      82,
+    ) +
+    `# Environment variables\n\nGenerated from the application at ${version}.\n\n| Variable | Default |\n|---|---|\n` +
+    Object.entries(vars)
+      .map(([k, v]) => `| \`${k}\` | \`${v.replace(/\|/g, '\\|')}\` |`)
+      .join('\n') +
+    '\n';
+  const toolsMd =
+    fm(
+      'MCP tools',
+      `The ${tools.length} MCP tools and their arguments, generated from the app registry at ${version}.`,
+      83,
+    ) +
+    `# MCP tools\n\n${tools.length} tools, frozen at ${minor}, generated from the application registry at ${version}.\nSee [MCP reference](/docs/${DEST}/mcp) for the protocol.\n\n| Tool | Arguments |\n|---|---|\n` +
+    tools.map((t) => `| \`${t.name}\` | \`${t.args.replace(/\|/g, '\\|')}\` |`).join('\n') +
+    '\n';
+  return { 'reference/env.md': envMd, 'reference/tools.md': toolsMd };
 }
 
 function run() {
@@ -248,8 +296,13 @@ function run() {
   }
 
   if (!FROZEN) {
-    for (const [name, content] of Object.entries(deriveArtifacts(version))) {
+    const tools = parseTools();
+    const vars = parseEnvVars();
+    for (const [name, content] of Object.entries(deriveArtifacts(version, tools, vars))) {
       outputs.set(join('src/generated', name), content);
+    }
+    for (const [name, content] of Object.entries(referencePages(version, tools, vars))) {
+      outputs.set(join('src/content/docs', 'docs', DEST, name), content);
     }
   }
 
