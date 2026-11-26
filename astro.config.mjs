@@ -51,4 +51,10 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  redirects: {
+    // Old paths keep working (L2-09): shared links from the v1 site era.
+    '/quickstart': '/docs/v2/quickstart',
+    '/docs': '/docs/v2',
+    '/changelog': '/blog',
+  },
 });

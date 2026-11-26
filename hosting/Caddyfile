@@ -7,6 +7,12 @@ klui.wyliam.dev {
   encode zstd gzip
   file_server
 
+  # Legacy paths answer 301 at the host (L2-09); the built stub pages are the fallback
+  # for hosts without redirect config.
+  redir /quickstart /docs/v2/quickstart 301
+  redir /docs /docs/v2 301
+  redir /changelog /blog 301
+
   header /docs/*.md Content-Type "text/markdown; charset=utf-8"
   header /llms.txt Content-Type "text/markdown; charset=utf-8"
 

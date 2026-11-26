@@ -94,7 +94,8 @@ for (const file of htmlFiles) {
 // Every docs HTML page must have a .md twin.
 for (const file of htmlFiles) {
   const rel = file.slice(DIST.length + 1);
-  if (rel.startsWith('docs/') && rel.endsWith('.html')) {
+  // docs/index.html is the /docs redirect stub, not a content page.
+  if (rel.startsWith('docs/') && rel.endsWith('.html') && rel !== 'docs/index.html') {
     const mdRel = rel.replace(/\/index\.html$/, '.md').replace(/\.html$/, '.md');
     const md = join(DIST, mdRel);
     if (!existsSync(md)) broken.push(`twin missing: ${rel} -> ${mdRel}`);
