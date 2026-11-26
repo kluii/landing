@@ -5,7 +5,7 @@
 // The script never publishes: it always writes draft: true with TODO markers, and never
 // rewrites an existing post.
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -34,20 +34,22 @@ function git(args) {
 }
 
 if (!FROM || !TO) fail('usage: --from <previous-tag> --to <tag> [--dry-run]');
-let isRepo = false;
-try {
-  isRepo = git(['rev-parse', '--is-inside-work-tree']).trim() === 'true';
-} catch {
-  isRepo = false;
-}
+const isRepo = (() => {
+  try {
+    return git(['rev-parse', '--is-inside-work-tree']).trim() === 'true';
+  } catch {
+    return false;
+  }
+})();
 if (!isRepo) fail(`${REPO} is not a git checkout`);
 for (const tag of [FROM, TO]) {
-  let ok = false;
-  try {
-    ok = Boolean(git(['rev-parse', '--verify', '--quiet', `${tag}^{commit}`]).trim());
-  } catch {
-    ok = false;
-  }
+  const ok = (() => {
+    try {
+      return Boolean(git(['rev-parse', '--verify', '--quiet', `${tag}^{commit}`]).trim());
+    } catch {
+      return false;
+    }
+  })();
   if (!ok) fail(`unknown tag: ${tag}`);
 }
 
@@ -65,7 +67,6 @@ const SECTIONS = [
   ['Fixed', 'fix'],
   ['Docs', 'doc'],
 ];
-const INTERNAL_TYPES = new Set(['chore', 'build', 'ci', 'test', 'style']);
 const LOCKFILE =
   /(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.lock|composer\.lock|Gemfile\.lock)$/;
 const PROPER_NOUNS = new Set([
@@ -161,7 +162,7 @@ const toShort = git(['rev-parse', '--short', TO]).trim();
 const body = [];
 body.push('TODO(hand-written): two to four sentences on why this release exists.');
 body.push('');
-for (const [section, types] of SECTIONS) {
+for (const [section] of SECTIONS) {
   const lines = groups[section];
   if (!lines.length) continue;
   body.push(`## ${section}`, '');
