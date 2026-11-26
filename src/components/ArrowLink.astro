@@ -1,0 +1,37 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+interface Props {
+  href: string;
+  external?: boolean;
+}
+
+const { href, external = false } = Astro.props;
+---
+
+<a class="arrow-link" href={href} {...external ? { rel: 'noopener', target: '_blank' } : {}}>
+  <slot /><span class="arrow" aria-hidden="true">→</span>
+</a>
+
+<style>
+  .arrow-link {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+    white-space: nowrap;
+  }
+
+  .arrow {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    margin-left: 6px;
+    display: inline-block;
+    transition: transform var(--hover-duration) ease;
+  }
+
+  .arrow-link:hover .arrow {
+    transform: translateX(2px);
+  }
+</style>

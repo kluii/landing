@@ -43,6 +43,14 @@ export const CLAIMS = {
     verifiedAt: '2.0.0',
     pending: true,
   },
+  installInstance: {
+    value: '2 vCPU / 2 GB',
+    source:
+      'klui/docs/deployment.md §1 Quickstart — instance the pilot measurement ran on, not yet recorded',
+    artifact: 'install-time.txt',
+    verifiedAt: '2.0.0',
+    pending: true,
+  },
   limits: {
     value: [
       'No attachments. Cards hold text, tags, an assignee and a date.',

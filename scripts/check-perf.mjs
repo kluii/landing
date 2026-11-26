@@ -35,6 +35,11 @@ for (const m of html.matchAll(/<script[^>]+src="([^"]+)"/g)) {
     jsFiles += 1;
   }
 }
+// Inline module scripts count too: the budget is transferred JS, not just files.
+for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+  const body = m[1].trim();
+  if (body !== '') js += gzipSync(Buffer.from(body)).length;
+}
 
 let css = 0;
 let cssFiles = 0;
@@ -58,7 +63,7 @@ if (css > CSS_BUDGET) failures.push(`landing CSS ${css} B > ${CSS_BUDGET} B budg
 if (fonts > FONT_BUDGET) failures.push(`font payload ${fonts} B > ${FONT_BUDGET} B budget`);
 
 console.log(
-  `check-perf: landing JS ${js} B (${jsFiles} files, budget ${JS_BUDGET}) · CSS ${css} B (${cssFiles} files, budget ${CSS_BUDGET}) · fonts ${fonts} B (budget ${FONT_BUDGET})`,
+  `check-perf: landing JS ${js} B transferred (${jsFiles} external files + inline, budget ${JS_BUDGET}) · CSS ${css} B (${cssFiles} files, budget ${CSS_BUDGET}) · fonts ${fonts} B (budget ${FONT_BUDGET})`,
 );
 if (failures.length > 0) {
   for (const f of failures) console.error(`check-perf: FAIL ${f}`);

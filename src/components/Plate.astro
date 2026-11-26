@@ -1,0 +1,73 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import darkLogo from '../../assets/dark-logo.png?url';
+
+interface Props {
+  caption: string;
+}
+
+const { caption } = Astro.props;
+---
+
+<figure class="plate-wrap reveal">
+  <div class="plate">
+    <img src={darkLogo} alt="" width="72" height="24" class="plate-logo" aria-hidden="true" />
+    <div class="plate-seam" aria-hidden="true"></div>
+    <div class="plate-board">
+      <slot />
+    </div>
+  </div>
+  <figcaption class="plate-caption mono">{caption}</figcaption>
+</figure>
+
+<style>
+  .plate-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .plate {
+    background-color: var(--plate);
+    border-radius: var(--radius-surface);
+    padding: 16px;
+  }
+
+  .plate-logo {
+    height: 24px;
+    width: auto;
+    display: block;
+  }
+
+  .plate-seam {
+    margin-top: 12px;
+    border-top: 1px solid var(--plate-muted);
+    opacity: 0.2;
+  }
+
+  .plate-board {
+    margin-top: 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .plate-caption {
+    margin-top: 16px;
+    text-align: center;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  @media (max-width: 639px) {
+    .plate-wrap {
+      padding: 0 20px;
+    }
+
+    .plate {
+      padding: 12px;
+    }
+  }
+</style>

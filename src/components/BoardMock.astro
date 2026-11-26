@@ -1,0 +1,127 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The DOM board mock inside the plate. aria-hidden: the plate caption carries the meaning.
+// Keeps the app's 4/8 px radii (no pills inside the mock); tag chips use the app palette
+// with the tint capped at 18% on dark, label in ink.
+import { BOARD_MOCK } from '../data/mock.ts';
+---
+
+<div class="board" aria-hidden="true">
+  {
+    BOARD_MOCK.map((column) => (
+      <div class="board-column">
+        <div class="board-column-head mono">
+          {column.name}
+          <span class="board-count">{column.cards.length}</span>
+        </div>
+        <div class="board-cards">
+          {column.cards.map((card) => (
+            <div class:list={['board-card', card.done && 'board-card-done']}>
+              <p class="board-card-title">{card.title}</p>
+              <div class="board-card-meta">
+                {card.tag && (
+                  <span class="tag-chip mono" style={`--tag: ${card.tag.color}`}>
+                    {card.tag.name}
+                  </span>
+                )}
+                {card.due && <span class="mono board-due">{card.due}</span>}
+                {card.initials && <span class="board-initials mono">{card.initials}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .board {
+    display: flex;
+    gap: 12px;
+    min-width: 720px;
+    scroll-snap-align: start;
+  }
+
+  .board-column {
+    flex: 0 0 288px;
+    background-color: var(--surface-2);
+    border-radius: var(--radius-surface);
+    padding: 8px;
+  }
+
+  .board-column-head {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 8px 8px;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink);
+  }
+
+  .board-count {
+    color: var(--ink-subtle);
+  }
+
+  .board-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .board-card {
+    background-color: var(--surface-muted);
+    border-radius: 4px;
+    padding: 12px;
+  }
+
+  .board-card-done .board-card-title {
+    color: var(--ink-subtle);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+
+  .board-card-title {
+    font-size: var(--text-body-sm);
+    line-height: var(--lh-body-sm);
+    letter-spacing: var(--tracking-small);
+    color: var(--ink);
+  }
+
+  .board-card-meta {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag-chip {
+    height: 22px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink);
+    background-color: color-mix(in srgb, var(--tag) 18%, var(--surface-2));
+  }
+
+  .board-due,
+  .board-initials {
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  .board-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: var(--surface-2);
+    color: var(--ink-muted);
+  }
+</style>

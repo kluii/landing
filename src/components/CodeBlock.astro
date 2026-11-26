@@ -1,0 +1,56 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import CopyButton from './CopyButton.astro';
+
+interface Props {
+  code: string;
+  lang: string;
+  copyLabel?: string;
+}
+
+const { code, lang, copyLabel = 'Copy' } = Astro.props;
+---
+
+<div class="code-block">
+  <div class="code-header">
+    <span class="code-lang mono">{lang}</span>
+    <CopyButton text={code} label={copyLabel} />
+  </div>
+  <pre class="code-body"><code>{code}</code></pre>
+</div>
+
+<style>
+  .code-block {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    max-width: 100%;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px 8px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-lang {
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  .code-body {
+    padding: 20px;
+    overflow-x: auto;
+    font-size: var(--text-mono);
+    line-height: var(--lh-mono);
+    min-width: 0;
+  }
+
+  .code-body code {
+    font-family: var(--font-mono);
+    white-space: pre;
+  }
+</style>

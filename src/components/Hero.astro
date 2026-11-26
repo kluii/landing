@@ -1,0 +1,188 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import CopyButton from './CopyButton.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { INSTALL_COMMANDS } from '../data/snippets.ts';
+import { LINKS } from '../data/links.ts';
+import pkg from '../../package.json';
+
+// The announcement pill links to the shipped release note for the documented version
+// when it exists, otherwise to the changelog index — never to a dead post URL.
+type Post = CollectionEntry<'blog'>;
+const posts = await getCollection('blog');
+const release = posts.find(
+  (p: Post) => !p.data.draft && p.data.version === CLAIMS.appVersion.value,
+);
+const pillHref = release ? `/blog/${release.id}` : '/blog';
+const demoUrl = LINKS.demo;
+---
+
+<section class="hero">
+  <a class="announce mono" href={pillHref}>
+    v{CLAIMS.appVersion.value} — close-out summaries, {CLAIMS.tools.value} MCP tools<span class="arrow" aria-hidden="true">→</span>
+  </a>
+  <h1 class="hero-title">A kanban for projects that end.</h1>
+  <p class="hero-lead">
+    Klui is a fast, self-hosted board where a link is the invite, agents read and write
+    through MCP, and every project closes with a summary you can hand over.
+  </p>
+  <div class="hero-actions">
+    <div class="hero-copy">
+      <CopyButton text={INSTALL_COMMANDS} label="Copy the install command" />
+    </div>
+    {
+      demoUrl !== '' && (
+        <a class="btn-ghost" href={demoUrl} rel="noopener" target="_blank">
+          Open the live demo board<span class="arrow" aria-hidden="true"> →</span>
+        </a>
+      )
+    }
+  </div>
+  <p class="hero-spec mono">
+    v{pkg.version} · AGPL-3.0 · self-hosted · {CLAIMS.tools.value} MCP tools
+  </p>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: var(--section-pad-lg) 24px 64px;
+    text-align: center;
+  }
+
+  .announce {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 14px;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    text-decoration: none;
+  }
+
+  .announce:hover {
+    background-color: var(--surface-muted);
+  }
+
+  .announce .arrow {
+    font-size: 0.9em;
+    transition: transform var(--hover-duration) ease;
+  }
+
+  .announce:hover .arrow {
+    transform: translateX(2px);
+  }
+
+  .hero-title {
+    margin: 32px auto 0;
+    max-width: 14ch;
+    font-size: var(--text-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+
+  .hero-lead {
+    margin: 24px auto 0;
+    max-width: 52ch;
+    font-size: var(--text-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tracking-body);
+    color: var(--ink-muted);
+  }
+
+  .hero-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .hero-copy :global(.copy-btn) {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    cursor: pointer;
+  }
+
+  html.js .hero-copy :global(.copy-btn) {
+    display: inline-flex;
+  }
+
+  .hero-copy :global(.copy-btn:hover) {
+    background-color: var(--primary-hover);
+  }
+
+  .hero-copy :global(.copy-btn:active) {
+    transform: translateY(1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--surface-2);
+  }
+
+  .btn-ghost .arrow {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    margin-left: 6px;
+  }
+
+  .hero-spec {
+    margin-top: 24px;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      padding: var(--section-pad) 20px 48px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .hero-copy :global(.copy-btn),
+    .btn-ghost {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

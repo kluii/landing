@@ -1,0 +1,67 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+interface Props {
+  id?: string;
+  title?: string;
+  lead?: string;
+  footnote?: string;
+}
+
+const { id, title, lead, footnote } = Astro.props;
+---
+
+<section class="section reveal" id={id}>
+  <div class="section-inner">
+    {title && <h2 class="section-title">{title}</h2>}
+    {lead && <p class="section-lead">{lead}</p>}
+    <slot />
+    {footnote && <p class="section-footnote mono">{footnote}</p>}
+  </div>
+</section>
+
+<style>
+  .section {
+    border-top: 1px solid var(--border);
+    padding: var(--section-pad) 0;
+  }
+
+  .section:first-of-type {
+    border-top: none;
+  }
+
+  .section-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .section-title {
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-h2);
+    max-width: 22ch;
+  }
+
+  .section-lead {
+    margin-top: 16px;
+    max-width: 52ch;
+    font-size: var(--text-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tracking-body);
+    color: var(--ink-muted);
+  }
+
+  .section-footnote {
+    margin-top: 32px;
+    text-align: right;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  @media (max-width: 767px) {
+    .section-inner {
+      padding: 0 20px;
+    }
+  }
+</style>
