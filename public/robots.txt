@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /_astro/
+Sitemap: https://klui.wyliam.dev/sitemap-index.xml

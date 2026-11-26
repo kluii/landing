@@ -1,0 +1,55 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import lightLogo from '../../assets/light-logo.png?url';
+---
+
+<Base
+  title="Klui — a kanban for projects that end"
+  description="Klui is a fast, self-hosted board where a link is the invite, agents read and write through MCP, and every project closes with a summary you can hand over."
+  path="/"
+  lang="en"
+>
+  <Nav lang="en" />
+  <main id="main">
+    <section class="hero">
+      <img src={lightLogo} alt="Klui" width="144" height="48" class="hero-logo" />
+      <h1 class="hero-title">A kanban for projects that end.</h1>
+      <p class="hero-lead">
+        The landing is being built in wave L1. The documentation lives under /docs/v2.
+      </p>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .hero {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: var(--section-pad-lg) 24px;
+    text-align: center;
+  }
+
+  .hero-logo {
+    height: 48px;
+    width: auto;
+    margin: 0 auto 32px;
+  }
+
+  .hero-title {
+    font-size: var(--text-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+
+  .hero-lead {
+    margin: 24px auto 0;
+    max-width: 44ch;
+    font-size: var(--text-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tracking-body);
+    color: var(--ink-muted);
+  }
+</style>

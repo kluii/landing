@@ -1,0 +1,82 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/fonts.css';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import { LINKS } from '../data/links.ts';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  lang?: 'en' | 'fr';
+  ogType?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  frPath?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  lang = 'en',
+  ogType = 'website',
+  ogImage,
+  noindex = false,
+  frPath,
+} = Astro.props;
+
+const canonical = `${LINKS.site}${path}`;
+const ogImg = ogImage ?? `${LINKS.site}/og${path === '/' ? '/home' : path}.png`;
+const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={`${LINKS.site}${path}`} />
+    {frPath && <link rel="alternate" hreflang="fr" href={`${LINKS.site}${frPath}`} />}
+    <link rel="alternate" hreflang="x-default" href={`${LINKS.site}${path}`} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImg} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImg} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      href="/fonts/newsreader-var-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-400-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+    <Footer path={path} lang={lang} />
+    <Analytics />
+  </body>
+</html>

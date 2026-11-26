@@ -1,0 +1,94 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* The only file that may contain --sl-color-* overrides (DESIGN.md §12). No purple anywhere. */
+
+@layer components {
+  :root {
+    --sl-color-bg: var(--canvas);
+    --sl-color-bg-banner: var(--surface-2);
+    --sl-color-bg-accent: var(--surface-2);
+    --sl-color-bg-inline-code: var(--surface-2);
+    --sl-color-bg-nav: var(--canvas);
+    --sl-color-bg-sidebar: var(--canvas);
+    --sl-color-bg-search: var(--surface);
+    --sl-color-text: var(--ink);
+    --sl-color-text-accent: var(--ink);
+    --sl-color-text-invert: var(--primary-foreground);
+    --sl-color-accent: var(--ink);
+    --sl-color-accent-low: var(--surface-muted);
+    --sl-color-accent-high: var(--ink-muted);
+    --sl-color-hairline: var(--border);
+    --sl-color-hairline-light: var(--border);
+    --sl-color-hairline-shade: var(--border);
+    --sl-color-white: var(--primary);
+    --sl-color-black: var(--canvas);
+    --sl-color-gray-1: var(--ink);
+    --sl-color-gray-2: var(--ink-muted);
+    --sl-color-gray-3: var(--ink-muted);
+    --sl-color-gray-4: var(--ink-subtle);
+    --sl-color-gray-5: var(--border-strong);
+    --sl-color-gray-6: var(--border);
+    --sl-font: var(--font-body);
+    --sl-font-system: var(--font-body);
+    --sl-font-mono: var(--font-mono);
+    --sl-content-width: var(--docs-content);
+  }
+
+  :root[data-theme='dark'] {
+    --sl-color-bg: var(--canvas);
+  }
+
+  h1,
+  .sl-heading-1,
+  h2,
+  .sl-heading-2 {
+    font-family: var(--font-display) !important;
+    font-weight: 400 !important;
+    letter-spacing: var(--tracking-h2);
+  }
+
+  h1,
+  .sl-heading-1 {
+    letter-spacing: var(--tracking-h1);
+  }
+
+  h3,
+  .sl-heading-3 {
+    font-family: var(--font-body) !important;
+    font-weight: 500 !important;
+    letter-spacing: var(--tracking-h3);
+  }
+
+  body {
+    letter-spacing: var(--tracking-body);
+  }
+
+  .sl-markdown-content :not(pre) > code {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inline);
+  }
+
+  .sl-markdown-content pre {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-surface);
+  }
+
+  aside {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    border-inline-start: 2px solid var(--ink);
+  }
+
+  aside[data-type='danger'] {
+    border-inline-start-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .sl-sidebar a[aria-current='page'] {
+    color: var(--ink);
+    border-inline-start: 2px solid var(--ink);
+    background-color: transparent;
+  }
+}

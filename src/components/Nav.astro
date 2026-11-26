@@ -1,0 +1,200 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import lightLogo from '../../assets/light-logo.png?url';
+import { LINKS } from '../data/links.ts';
+
+interface Props {
+  lang: 'en' | 'fr';
+}
+
+const { lang } = Astro.props;
+const docsPath = lang === 'fr' ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
+const changelogPath = lang === 'fr' ? '/fr/blog' : '/blog';
+---
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href={lang === 'fr' ? '/fr/' : '/'} class="nav-brand" aria-label="Klui — home">
+      <img src={lightLogo} alt="Klui" width="72" height="24" />
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href={docsPath}>Docs</a>
+      <a href={changelogPath}>Changelog</a>
+      <a href={LINKS.github} rel="noopener">GitHub</a>
+      <a href={docsPath} class="nav-deploy">Deploy</a>
+    </nav>
+    <button class="nav-menu" type="button" aria-expanded="false" aria-controls="nav-sheet" aria-label="Menu">
+      <span class="nav-menu-lines" aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="nav-sheet" id="nav-sheet" hidden>
+    <nav aria-label="Mobile">
+      <a href={docsPath}>Docs</a>
+      <a href={changelogPath}>Changelog</a>
+      <a href={LINKS.github} rel="noopener">GitHub</a>
+      <a href={docsPath} class="nav-deploy">Deploy</a>
+    </nav>
+  </div>
+  <noscript>
+    <nav class="nav-links" aria-label="Main (no JavaScript)">
+      <a href={docsPath}>Docs</a>
+      <a href={changelogPath}>Changelog</a>
+      <a href={LINKS.github} rel="noopener">GitHub</a>
+      <a href={docsPath} class="nav-deploy">Deploy</a>
+    </nav>
+  </noscript>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.nav-menu');
+  const sheet = document.getElementById('nav-sheet');
+  if (button && sheet) {
+    const open = () => {
+      button.setAttribute('aria-expanded', 'true');
+      sheet.hidden = false;
+      button.setAttribute('aria-label', 'Close menu');
+      (sheet.querySelector('a') as HTMLElement | null)?.focus();
+    };
+    const close = () => {
+      button.setAttribute('aria-expanded', 'false');
+      sheet.hidden = true;
+      button.setAttribute('aria-label', 'Menu');
+      button.focus();
+    };
+    button.addEventListener('click', () => {
+      button.getAttribute('aria-expanded') === 'true' ? close() : open();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') close();
+    });
+    sheet.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) close();
+    });
+  }
+</script>
+
+<style>
+  .site-nav {
+    border-bottom: 1px solid var(--border);
+    background-color: var(--canvas);
+  }
+
+  .nav-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    height: var(--nav-height);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .nav-brand img {
+    height: 24px;
+    width: auto;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-links a {
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+
+  .nav-links a:hover {
+    color: var(--ink);
+  }
+
+  .nav-deploy {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink) !important;
+  }
+
+  .nav-deploy:hover {
+    background-color: var(--surface-2);
+  }
+
+  .nav-menu {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-menu-lines,
+  .nav-menu-lines::before,
+  .nav-menu-lines::after {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background-color: var(--ink);
+    position: relative;
+    content: '';
+  }
+
+  .nav-menu-lines::before {
+    position: absolute;
+    top: -5px;
+  }
+
+  .nav-menu-lines::after {
+    position: absolute;
+    top: 5px;
+  }
+
+  .nav-sheet {
+    border-top: 1px solid var(--border);
+    background-color: var(--canvas);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.55);
+    padding: 8px 20px 24px;
+  }
+
+  .nav-sheet nav {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-sheet a {
+    padding: 12px 0;
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-sheet .nav-deploy {
+    margin-top: 16px;
+    justify-content: center;
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  @media (max-width: 767px) {
+    .nav-links {
+      display: none;
+    }
+
+    .nav-menu {
+      display: inline-flex;
+    }
+  }
+</style>

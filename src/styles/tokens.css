@@ -1,0 +1,87 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* The only file allowed to contain hex colours. DESIGN.md is the source of truth. */
+
+@layer tokens {
+  :root {
+    color-scheme: dark;
+
+    /* graphite ramp (warm: R > G > B) */
+    --canvas: #121110;
+    --surface: #191817;
+    --surface-2: #201e1c;
+    --surface-muted: #262421;
+    --border: #2c2a27;
+    --border-strong: #413d38;
+    --ink: #f4f1eb;
+    --ink-muted: #ada79e;
+    --ink-subtle: #948e85;
+    --primary: #f5f2ec;
+    --primary-hover: #fffdf8;
+    --primary-foreground: #14120f;
+    --plate: #e9e5dd;
+    --plate-ink: #14120f;
+    --plate-muted: #5f5a52;
+    --danger: #e8836f;
+    --focus: #f5f2ec;
+    --selection: #2e2b27;
+    --glyph: #1e1c19;
+
+    /* type voices */
+    --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+    /* tracking tokens — the positive tracking on sans is the signature; never set per component */
+    --tracking-display: -0.025em;
+    --tracking-h1: -0.02em;
+    --tracking-h2: -0.015em;
+    --tracking-h3: 0.01em;
+    --tracking-body: 0.02em;
+    --tracking-small: 0.04em;
+    --tracking-label: 0.05em;
+    --tracking-mono: 0em;
+    --tracking-mono-sm: 0.02em;
+
+    /* type scale (size / line-height) */
+    --text-display: clamp(44px, 6.4vw, 76px);
+    --lh-display: 1;
+    --text-display-sm: 48px;
+    --lh-display-sm: 1.05;
+    --text-h1: 40px;
+    --lh-h1: 1.1;
+    --text-h2: 32px;
+    --lh-h2: 1.15;
+    --text-h3: 20px;
+    --lh-h3: 1.3;
+    --text-lead: 18px;
+    --lh-lead: 1.6;
+    --text-body: 16px;
+    --lh-body: 1.65;
+    --text-body-sm: 14px;
+    --lh-body-sm: 1.5;
+    --text-label: 13px;
+    --lh-label: 1.4;
+    --text-mono: 13px;
+    --lh-mono: 1.5;
+    --text-mono-sm: 12px;
+    --lh-mono-sm: 1.4;
+
+    /* radii: pills on controls only, 8px on surfaces, 4px on inline code only */
+    --radius-pill: 9999px;
+    --radius-surface: 8px;
+    --radius-inline: 4px;
+
+    /* layout */
+    --container: 1200px;
+    --prose: 680px;
+    --docs-content: 46rem;
+    --nav-height: 72px;
+    --section-pad: 96px;
+    --section-pad-lg: 120px;
+
+    /* motion: one reveal, 500ms, once */
+    --reveal-duration: 500ms;
+    --reveal-ease: cubic-bezier(0.2, 0, 0, 1);
+    --hover-duration: 140ms;
+  }
+}
