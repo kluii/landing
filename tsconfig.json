@@ -1,0 +1,18 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "types": ["astro/client"]
+  },
+  "include": ["src/**/*", "tests/**/*", "scripts/**/*", "astro.config.mjs"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "src/generated",
+    "src/content/docs/docs/v1",
+    "src/content/docs/docs/v2"
+  ]
+}

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+package-lock.json
+LICENSE
+assets/
+public/fonts/
+docs/
+src/generated/
+src/content/docs/docs/v1/
+src/content/docs/docs/v2/
+src/content/docs/fr/
+AGENTS.md
+DESIGN.md
+PROMPT.md
+ROADMAP.md
+README-DOCS.md
