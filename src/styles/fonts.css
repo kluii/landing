@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: AGPL-3.0-only */
-/* Self-hosted subsets, font-display: swap, size-adjust on the fallbacks so CLS stays 0. */
+/* Self-hosted subsets, font-display: swap, metric overrides matching the fallback faces so the swap causes CLS 0. */
 
 @layer base {
   @font-face {
@@ -7,7 +7,6 @@
     font-style: normal;
     font-weight: 200 800;
     font-display: swap;
-    font-size-adjust: 88%;
     ascent-override: 91.7%;
     descent-override: 21.9%;
     line-gap-override: 0%;
@@ -22,7 +21,6 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    font-size-adjust: 108%;
     ascent-override: 90.6%;
     descent-override: 21.2%;
     line-gap-override: 0%;
@@ -37,7 +35,6 @@
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    font-size-adjust: 108%;
     ascent-override: 90.6%;
     descent-override: 21.2%;
     line-gap-override: 0%;
@@ -52,7 +49,6 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    font-size-adjust: 113%;
     ascent-override: 92.8%;
     descent-override: 23.6%;
     line-gap-override: 0%;
