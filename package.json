@@ -26,7 +26,8 @@
     "sync-docs": "node scripts/sync-docs.mjs",
     "changelog": "node scripts/changelog.mjs",
     "og": "node scripts/og-images.mjs",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "test:landing": "node scripts/check-landing.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
