@@ -75,7 +75,7 @@ jobs:
         run: |
           npx lighthouse http://localhost:4321 --preset=desktop \
             --chrome-flags="--headless --no-sandbox" \
-            --output=json --output-path=./lh.json --quiet
+            --output=json --output-path=./lh.json --save-assets --quiet
 
       - name: Assert Lighthouse budgets
         run: node scripts/check-lighthouse.mjs lh.json
@@ -88,5 +88,8 @@ jobs:
         if: always()
         with:
           name: lighthouse-report
-          path: lh.json
+          path: |
+            lh.json
+            *.trace.json
+            *.devtoolslog.json
           retention-days: 30
