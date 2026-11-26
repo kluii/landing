@@ -100,6 +100,20 @@ for (const file of [
   lintText(file.slice(ROOT.length + 1), readFileSync(file, 'utf8'));
 }
 
+// A generated release post keeps its TODO( markers until the human pass
+// (docs/features/changelog.md §2); a production build fails on them.
+if (PRODUCTION) {
+  for (const ext of ['.md', '.mdx']) {
+    for (const file of walk(join(ROOT, 'src', 'content', 'blog'), ext)) {
+      if (readFileSync(file, 'utf8').includes('TODO(')) {
+        failures.push(
+          `${file.slice(ROOT.length + 1)}: TODO( marker survived a production build (changelog.md §2)`,
+        );
+      }
+    }
+  }
+}
+
 // Footer rule: every built page carries the line, linking to wyliam.dev.
 for (const file of htmlFiles) {
   const rel = file.slice(DIST.length + 1);
