@@ -10,13 +10,23 @@ interface Props {
   path: string;
   lang: 'en' | 'fr';
   updated: string;
+  frPath?: string;
+  enPath?: string;
 }
 
-const { title, description, path, lang, updated } = Astro.props;
+const { title, description, path, lang, updated, frPath, enPath } = Astro.props;
 const updatedLabel = legalValue('updatedAt');
 ---
 
-<Base title={title} description={description} path={path} lang={lang} ogType="article">
+<Base
+  title={title}
+  description={description}
+  path={path}
+  lang={lang}
+  ogType="article"
+  frPath={frPath}
+  enPath={enPath}
+>
   <Nav lang={lang} />
   <main id="main" class="legal">
     <h1 class="legal-title">{title}</h1>

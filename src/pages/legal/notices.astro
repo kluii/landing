@@ -1,0 +1,57 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Mentions légales (FR) — LCEN art. 6-III (docs/legal.md §1/§3). Every operator value
+// comes from src/data/legal.ts placeholders; a production build fails while any
+// {{...}} survives.
+import Legal from '../../layouts/Legal.astro';
+import { legalValue, LINKS } from '../../data/legal-links.ts';
+
+const operator = legalValue('operator');
+const legalForm = legalValue('legalForm');
+const address = legalValue('address');
+const contact = legalValue('contact');
+const registration = legalValue('registration');
+const director = legalValue('publicationDirector');
+const hostName = legalValue('hostName');
+const hostAddress = legalValue('hostAddress');
+const hostPhone = legalValue('hostPhone');
+const region = legalValue('region');
+---
+
+<Legal
+  title="Mentions légales"
+  description="Éditeur, directeur de la publication et hébergeur du site klui.wyliam.dev, conformément à l’article 6 de la LCEN."
+  path="/legal/notices"
+  lang="fr"
+  updated="2026-11-26"
+>
+  <h2>Éditeur du site</h2>
+  <p>
+    Ce site est édité par {operator}, {legalForm}, dont le siège est situé {address}.
+    Contact : <a href={`mailto:${contact}`}>{contact}</a>. {registration}.
+  </p>
+
+  <h2>Directeur de la publication</h2>
+  <p>{director}.</p>
+
+  <h2>Hébergeur</h2>
+  <p>
+    Ce site est hébergé par {hostName}, {hostAddress}, téléphone : {hostPhone}. Les données
+    sont hébergées en {region}.
+  </p>
+
+  <h2>Propriété intellectuelle</h2>
+  <p>
+    Le code de ce site et de l’application Klui est placé sous licence
+    <a href={LINKS.licence} rel="noopener">AGPL-3.0</a>. Le nom « Klui » et le logo sont la
+    propriété de {operator}. Les documentations publiées ici suivent la même licence que le
+    code. Toute reproduction non autorisée est interdite, sauf exceptions légales.
+  </p>
+
+  <h2>Signalement d’un contenu illicite</h2>
+  <p>
+    Pour signaler un contenu illicite publié sur ce site, écrivez à
+    <a href={`mailto:${contact}`}>{contact}</a> en indiquant l’URL concernée et le motif du
+    signalement.
+  </p>
+</Legal>

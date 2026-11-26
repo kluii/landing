@@ -1,20 +1,20 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-only
 import lightLogo from '../../assets/light-logo.png?url';
-import { LINKS } from '../data/links.ts';
+import { LINKS, HAS_FR_ROUTES } from '../data/links.ts';
 
 interface Props {
   lang: 'en' | 'fr';
 }
 
 const { lang } = Astro.props;
-const docsPath = lang === 'fr' ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
-const changelogPath = lang === 'fr' ? '/fr/blog' : '/blog';
+const docsPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
+const changelogPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/blog' : '/blog';
 ---
 
 <header class="site-nav">
   <div class="nav-inner">
-    <a href={lang === 'fr' ? '/fr/' : '/'} class="nav-brand" aria-label="Klui — home">
+    <a href={lang === 'fr' && HAS_FR_ROUTES ? '/fr/' : '/'} class="nav-brand" aria-label="Klui — home">
       <img src={lightLogo} alt="Klui" width="72" height="24" />
     </a>
     <nav class="nav-links" aria-label="Main">

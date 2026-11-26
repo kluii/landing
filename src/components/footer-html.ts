@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // The footer markup lives in one .ts module so both the site Footer and the Starlight
 // Footer override render the same bytes (Starlight overrides cannot bundle .astro imports).
-import { LINKS } from '../data/links.ts';
+import { LINKS, HAS_FR_ROUTES } from '../data/links.ts';
 import { CLAIMS } from '../data/claims.ts';
 import pkg from '../../package.json';
 
@@ -26,8 +26,9 @@ function esc(s: string): string {
 }
 
 export function footerHtml(lightLogo: string, lang: 'en' | 'fr'): string {
-  const docsPath = lang === 'fr' ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
-  const changelogPath = lang === 'fr' ? '/fr/blog' : '/blog';
+  const docsPath =
+    lang === 'fr' && HAS_FR_ROUTES ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
+  const changelogPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/blog' : '/blog';
   const privacyPath = lang === 'fr' ? '/legal/confidentialite' : '/legal/privacy';
   return `
 <style>${CSS}</style>
