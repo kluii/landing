@@ -1,0 +1,61 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import Legal from '../../layouts/Legal.astro';
+import { legalValue, LINKS } from '../../data/legal-links.ts';
+
+const operator = legalValue('operator');
+const contact = legalValue('contact');
+const region = legalValue('region');
+const analyticsOn = Boolean(import.meta.env.PUBLIC_ANALYTICS_URL);
+---
+
+<Legal
+  title="Privacy"
+  description="What this site collects: nothing but optional, cookieless analytics. No account, no form, no cookie, no newsletter."
+  path="/legal/privacy"
+  lang="en"
+  updated="2026-11-26"
+>
+  <h2>What this site collects</h2>
+  <p>
+    {analyticsOn
+      ? 'This site loads one cookieless analytics script (the endpoint configured at build time). It measures page views by path, referrer host, device class and country. It sets no cookie, stores nothing in your browser, and does not track you across sites.'
+      : 'This site performs no measurement. The analytics endpoint is not configured, so no script is loaded, no request leaves your browser to a third party, and nothing is collected.'}
+    There is no account, no form, no newsletter and no cookie anywhere on this site.
+  </p>
+
+  <h2>Legal basis and retention</h2>
+  <p>
+    Audience measurement without a cookie or a persistent identifier falls under the CNIL
+    exemption for audience measurement; retention is at most 25 months, and only when the
+    analytics endpoint is configured. The site respects <code>DNT: 1</code> and
+    <code>Sec-GPC: 1</code>: when either header is present, the analytics script is not loaded.
+  </p>
+
+  <h2>Recipients and transfers</h2>
+  <p>
+    The hosting provider processes server logs (IP address, user agent, requested path) for
+    security and availability, in {region}. No data is transferred outside the EU.
+  </p>
+
+  <h2>Cookies</h2>
+  <p>
+    This site sets no cookie, in any case, and therefore shows no consent banner. If a cookie
+    is ever introduced, a banner with an equally easy refusal ships in the same change, before
+    the next deploy.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    You have the right to access, rectify, erase and object to the processing of your data,
+    and the right to portability. To exercise them, write to <a href={`mailto:${contact}`}>{contact}</a>.
+    You can also lodge a complaint with the <a href={LINKS.cnil} rel="noopener">CNIL</a>.
+  </p>
+
+  <h2>The application is separate</h2>
+  <p>
+    Klui itself is self-hosted software: the data of a self-hosted instance is controlled by
+    whoever runs that instance ({operator}), not by this site. This page describes only
+    {operator}’s site.
+  </p>
+</Legal>
