@@ -1,0 +1,28 @@
+{
+  "count": 21,
+  "tools": [
+    "list_boards",
+    "get_board",
+    "create_board",
+    "update_board",
+    "delete_board",
+    "create_column",
+    "update_column",
+    "delete_column",
+    "create_card",
+    "bulk_create_cards",
+    "get_card",
+    "update_card",
+    "move_card",
+    "set_card_done",
+    "delete_card",
+    "list_comments",
+    "create_comment",
+    "search_cards",
+    "get_activity",
+    "export_board",
+    "whoami"
+  ],
+  "source": "klui/docs/mcp.md §3 tool table",
+  "app_version": "2.0.0"
+}
