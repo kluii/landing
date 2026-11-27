@@ -61,6 +61,35 @@ for (const file of files) {
   }
 }
 
+// Static a11y facts that need no browser (L4-04): every real page has a skip link to
+// #main, and the built CSS carries the reduced-motion, focus-visible and forced-colors
+// rules. The keyboard walk itself runs in the L4-04 manual pass (recorded in verify).
+const cssText = readdirSync(join(DIST, '_astro'))
+  .filter((f) => f.endsWith('.css'))
+  .map((f) => readFileSync(join(DIST, '_astro', f), 'utf8'))
+  .join('\n');
+for (const file of files) {
+  const rel = file.slice(DIST.length + 1);
+  const html = readFileSync(file, 'utf8');
+  if (html.includes('http-equiv="refresh"')) continue;
+  if (!/class="[^"]*skip-link[^"]*"[^>]*href="#(main|_top)"/.test(html)) {
+    console.error(`axe-static: ${rel}: no skip link to #main`);
+    violations += 1;
+  }
+}
+if (!/prefers-reduced-motion/.test(cssText)) {
+  console.error('axe-static: no prefers-reduced-motion rule in built CSS');
+  violations += 1;
+}
+if (!/:focus-visible/.test(cssText)) {
+  console.error('axe-static: no :focus-visible rule in built CSS');
+  violations += 1;
+}
+if (!/forced-colors/.test(cssText)) {
+  console.error('axe-static: no forced-colors rule in built CSS');
+  violations += 1;
+}
+
 if (violations > 0) {
   console.error(
     `check-a11y: ${violations} violation(s) on site-owned pages across ${pages} routes`,
