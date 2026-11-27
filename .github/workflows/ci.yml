@@ -75,8 +75,14 @@ jobs:
           exit 1
 
       - name: Lighthouse (desktop preset, cold cache)
+        # One retry: the measurement itself is flaky on a contended runner (a CLS of
+        # ~0.0015 from a font-apply race, see docs/verify/l4.md). The retry reruns the
+        # measurement, never the assertion — the budget gate below stays a hard fail.
         run: |
           npx lighthouse http://127.0.0.1:4321 --preset=desktop \
+            --chrome-flags="--headless --no-sandbox" \
+            --output=json --output-path=./lh.json --save-assets --quiet \
+          || npx lighthouse http://127.0.0.1:4321 --preset=desktop \
             --chrome-flags="--headless --no-sandbox" \
             --output=json --output-path=./lh.json --save-assets --quiet
 
