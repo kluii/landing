@@ -44,7 +44,7 @@ export function footerHtml(lightLogo: string, lang: Lang, variant?: Variant): st
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="${lightLogo}" alt="Klui" width="96" height="32" class="footer-logo" />
+      <img src="${lightLogo}" alt="Klui" width="32" height="32" class="footer-logo" />
       <p class="footer-desc">A self-hosted kanban for projects that end.</p>
     </div>
     <nav class="footer-links" aria-label="Footer">
