@@ -55,19 +55,29 @@ for (const [key, claim] of Object.entries(CLAIMS)) {
       );
   }
   if (claim.artifact === 'install-time.txt') {
-    const n = Number.parseInt(raw, 10);
-    if (Number.isNaN(n) || n !== claim.value)
-      failures.push(`installMinutes: claim ${claim.value} != install-time.txt ${raw.trim()}`);
+    // installInstance shares the artifact with installMinutes: dispatch on the claim
+    // key, not the artifact name, or the numeric parser eats the string claim.
+    if (key === 'installMinutes') {
+      const n = raw
+        .split('\n')
+        .map((l) => Number(l.trim()))
+        .find((v) => Number.isFinite(v) && v > 0);
+      if (n === undefined || n !== claim.value)
+        failures.push(`installMinutes: claim ${claim.value} != install-time.txt ${raw.trim()}`);
+    }
+    if (key === 'installInstance' && !raw.split('\n').map((l) => l.trim()).includes(claim.value)) {
+      failures.push(`installInstance: claim ${claim.value} != install-time.txt ${raw.trim()}`);
+    }
   }
 }
 
 // A claim referenced nowhere in src/ is a stale claim.
-function walk(dir) {
+function walk(dir, ext = /\.(astro|ts|mjs|mdx?)$/) {
   const out = [];
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
-    if (statSync(p).isDirectory()) out.push(...walk(p));
-    else if (/\.(astro|ts|mjs|mdx?)$/.test(p)) out.push(p);
+    if (statSync(p).isDirectory()) out.push(...walk(p, ext));
+    else if (ext instanceof RegExp ? ext.test(p) : p.endsWith(ext)) out.push(p);
   }
   return out;
 }
