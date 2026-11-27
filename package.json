@@ -27,7 +27,8 @@
     "changelog": "node scripts/changelog.mjs",
     "og": "node scripts/og-images.mjs",
     "smoke": "node scripts/smoke.mjs",
-    "test:landing": "node scripts/check-landing.mjs"
+    "test:landing": "node scripts/check-landing.mjs",
+    "test:meta": "node scripts/check-meta.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",

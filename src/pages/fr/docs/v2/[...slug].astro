@@ -5,19 +5,16 @@
 // the sync does for the EN copies.
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import { existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import Prose from '../../../../layouts/Prose.astro';
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..', '..');
 
 export async function getStaticPaths() {
   const pages = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
-  return pages.map((p: CollectionEntry<'docsFr'>) => ({
-    params: { slug: p.id },
-    props: { id: p.id },
-  }));
+  return pages
+    .filter((p: CollectionEntry<'docsFr'>) => p.id !== 'index')
+    .map((p: CollectionEntry<'docsFr'>) => ({
+      params: { slug: p.id },
+      props: { id: p.id },
+    }));
 }
 
 const { id } = Astro.props as { id: string };
@@ -25,7 +22,11 @@ const all = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
 const entry = all.find((p: CollectionEntry<'docsFr'>) => p.id === id)!;
 const { Content } = await render(entry);
 
-const enTwin = existsSync(join(ROOT, 'src', 'site-docs', `${id}.md`));
+// the EN twin is the same slug in the synced docs collection (site pages are merged there)
+const docsEn = (await getCollection('docs')) as CollectionEntry<'docs'>[];
+const enTwin = docsEn.some(
+  (e: CollectionEntry<'docs'>) => e.id === `docs/v2/${id}` || (id === 'index' && e.id === 'docs/v2'),
+);
 ---
 
 <Prose
