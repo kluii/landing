@@ -1,0 +1,70 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The three pillars (link-as-invite, agents, the project ends). On the cloud variant the
+// rows carry no docs link: the cloud page has no docs CTA in its body (ADR-0015).
+import Section from './Section.astro';
+import ArrowLink from './ArrowLink.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { LANDING, fill } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+const t = (s: string) => fill(s, { tools: CLAIMS.tools.value });
+---
+
+<Section>
+  <h2 class="sr-only">{copy.srWhy}</h2>
+  <div class="three-lines">
+    {
+      copy.lines.map((line) => (
+        <div class="line-row">
+          <div class="line-text">
+            <h3 class="line-claim">{line.claim}</h3>
+            <p class="line-body" set:html={t(line.body)} />
+          </div>
+          {line.href && <ArrowLink href={line.href}>{line.link}</ArrowLink>}
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .three-lines {
+    margin-top: 8px;
+  }
+
+  .line-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px;
+    align-items: end;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .line-row:first-child {
+    border-top: none;
+  }
+
+  .line-claim {
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--tracking-h3);
+  }
+
+  .line-body {
+    margin-top: 8px;
+    max-width: 60ch;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 767px) {
+    .line-row {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      gap: 12px;
+    }
+  }
+</style>

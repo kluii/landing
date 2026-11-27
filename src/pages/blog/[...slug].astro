@@ -1,0 +1,24 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BlogPost from '../../components/BlogPost.astro';
+
+// getStaticPaths is extracted into its own chunk at build time, so it must not
+// reference module-scope helpers — the filter is inlined here.
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog')) as CollectionEntry<'blog'>[];
+  return posts
+    .filter((p: CollectionEntry<'blog'>) =>
+      p.data.lang === 'en' && (import.meta.env.PROD ? !p.data.draft : true),
+    )
+    .map((post: CollectionEntry<'blog'>) => ({
+      params: { slug: post.data.version.replace(/\./g, '-') },
+      props: { id: post.id },
+    }));
+}
+
+const { id } = Astro.props as { id: string };
+---
+
+<BlogPost lang="en" id={id} />

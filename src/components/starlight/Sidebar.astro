@@ -1,0 +1,96 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Starlight Sidebar override: prepends the version switcher (a native <select>, shown
+// only when more than one version exists). It links to the same slug in the other
+// version only when that page exists there, otherwise to the other version's index.
+import Default from '@astrojs/starlight/components/Sidebar.astro';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+const allDocs = (await getCollection('docs')) as CollectionEntry<'docs'>[];
+const versions = [
+  ...new Set(allDocs.map((e) => e.id.split('/')[1]).filter((v): v is string => Boolean(v))),
+].sort();
+
+let switcher: { current: string; other: string; options: { value: string; label: string }[] } | null =
+  null;
+if (versions.length > 1) {
+  // Route /docs/v2/quickstart is content id docs/v2/quickstart; /docs/v2 is docs/v2/index.
+  const path = Astro.url.pathname.replace(/\/+$/, '');
+  const current =
+    versions.find((v) => path === `/docs/${v}` || path.startsWith(`/docs/${v}/`)) ?? versions[0]!;
+  const other = versions.find((v) => v !== current) ?? versions[0]!;
+  const otherIds = new Set(
+    allDocs.filter((e) => e.id.startsWith(`docs/${other}/`)).map((e) => e.id),
+  );
+  const currentId = path.replace(/^\//, '');
+  const normalizedId = currentId === `docs/${current}` ? `${currentId}/index` : currentId;
+  const otherId = normalizedId.replace(`docs/${current}/`, `docs/${other}/`);
+  const target = !otherId.endsWith('/index') && otherIds.has(otherId) ? `/${otherId}` : `/docs/${other}`;
+  switcher = {
+    current,
+    other,
+    options: [
+      { value: Astro.url.pathname, label: `${current} \u2014 current page` },
+      { value: target, label: `${other}${other === 'v1' ? ' \u2014 frozen' : ''}` },
+    ],
+  };
+}
+---
+
+{
+  switcher && (
+    <div class="version-switch">
+      <label class="version-label mono" for="version-select">
+        Version
+      </label>
+      <select id="version-select" class="version-select">
+        {switcher.options.map((o) => (
+          <option value={o.value} selected={o.value === Astro.url.pathname}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
+<Default {...Astro.props} />
+
+{
+  switcher && (
+    <script>
+      const select = document.getElementById('version-select');
+      select?.addEventListener('change', () => {
+        const url = (select as HTMLSelectElement).value;
+        if (url && url !== window.location.pathname) window.location.href = url;
+      });
+    </script>
+  )
+}
+
+<style>
+  .version-switch {
+    margin-bottom: 16px;
+  }
+
+  .version-label {
+    display: block;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+    margin-bottom: 8px;
+  }
+
+  .version-select {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    background-color: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-surface);
+    font-family: var(--font-body);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+</style>

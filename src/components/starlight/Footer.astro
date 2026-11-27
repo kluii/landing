@@ -1,0 +1,11 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Starlight Footer override: the docs footer is the site footer, so the footer rule
+// (Made with <3 by Wyliam, mono version line) holds on every docs page including /404.
+// Frontmatter must open the file: Starlight's override pipeline does not parse a
+// leading comment. Markup comes from footer-html.ts (single source).
+import lightLogo from '../../../assets/light-logo.png?url';
+import { footerHtml } from '../footer-html.ts';
+---
+
+<Fragment set:html={footerHtml(lightLogo, Astro.props.lang === 'fr' ? 'fr' : 'en')} />

@@ -1,0 +1,76 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The ASCII glyph grid: the only texture, behind the hero, static SVG, monochrome,
+// masked to fade at the edges, aria-hidden, pointer-events none, never behind body text.
+interface Props {
+  rows?: number;
+  cols?: number;
+}
+
+const { rows = 9, cols = 48 } = Astro.props;
+const GLYPHS = ['·', '▪', '+', '×', '░', '·', '▫', '·'];
+const cells: string[] = [];
+for (let r = 0; r < rows; r += 1) {
+  for (let c = 0; c < cols; c += 1) {
+    // Deterministic pseudo-random placement, no animation, no canvas.
+    const h = (r * 31 + c * 17) % 97;
+    cells.push(GLYPHS[h % GLYPHS.length] ?? "·");
+  }
+}
+const CELL = 24;
+const W = cols * CELL;
+const H = rows * CELL;
+---
+
+<svg
+  class="glyph-grid"
+  width={W}
+  height={H}
+  viewBox={`0 0 ${W} ${H}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <mask id="glyph-fade">
+      <rect width={W} height={H} fill="url(#glyph-fade-gradient)" />
+      <radialGradient id="glyph-fade-gradient" cx="50%" cy="42%" r="65%">
+        <stop offset="0%" stop-color="white" />
+        <stop offset="100%" stop-color="black" />
+      </radialGradient>
+    </mask>
+  </defs>
+  <g mask="url(#glyph-fade)" class="glyphs">
+    {
+      cells.map((g, i) => (
+        <text x={(i % cols) * CELL + CELL / 2} y={Math.floor(i / cols) * CELL + CELL / 2 + 4} text-anchor="middle">
+          {g}
+        </text>
+      ))
+    }
+  </g>
+</svg>
+
+<style>
+  .glyph-grid {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
+    pointer-events: none;
+    color: var(--glyph);
+    opacity: 0.9;
+  }
+
+  .glyphs text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    fill: currentColor;
+  }
+
+  @media (forced-colors: active) {
+    .glyph-grid {
+      display: none;
+    }
+  }
+</style>

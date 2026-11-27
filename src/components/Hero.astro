@@ -1,0 +1,273 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The landing hero, one markup for both variants and both languages (ADR-0015).
+// cloud: primary = link to PUBLIC_CLOUD_URL (disabled when unset in dev),
+//        secondary = link to the self-hosted landing.
+// selfhosted: primary = copy button, secondary = link to the cloud landing,
+//        plus the demo link when PUBLIC_DEMO_URL is set.
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import CopyButton from './CopyButton.astro';
+import GlyphGrid from './GlyphGrid.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { INSTALL_COMMANDS } from '../data/snippets.ts';
+import { LINKS } from '../data/links.ts';
+import { pickReleasePost } from '../data/release-post.ts';
+import { LANDING, NAV, fill } from '../data/copy.ts';
+import type { Lang, Variant } from '../data/copy.ts';
+import pkg from '../../package.json';
+
+interface Props {
+  lang: Lang;
+  variant: Variant;
+}
+
+const { lang, variant } = Astro.props;
+const copy = LANDING[lang][variant];
+
+// The announcement pill links to the shipped release note for the documented version
+// when it exists, otherwise to the changelog index — never to a dead post URL.
+type Post = CollectionEntry<'blog'>;
+const posts = (await getCollection('blog')) as Post[];
+const release = pickReleasePost(posts, lang, CLAIMS.appVersion.value);
+const blogBase = lang === 'fr' ? '/fr/blog' : '/blog';
+const pillHref = release ? `${blogBase}/${release.data.version.replace(/\./g, '-')}` : blogBase;
+const demoUrl = LINKS.demo;
+const cloudUrl = LINKS.cloud;
+const t = (s: string) =>
+  fill(s, {
+    appVersion: CLAIMS.appVersion.value,
+    tools: CLAIMS.tools.value,
+    version: pkg.version,
+  });
+---
+
+<div class="hero-zone">
+  <GlyphGrid />
+  <section class="hero">
+    <a class="announce mono" href={pillHref}>
+      {t(copy.pill)}<span class="arrow" aria-hidden="true">→</span>
+    </a>
+    <h1 class="hero-title">{copy.heroH1}</h1>
+    <p class="hero-lead">{copy.heroLead}</p>
+    <div class="hero-actions">
+      {
+        variant === 'cloud' ? (
+          cloudUrl !== '' ? (
+            <a class="btn-primary" href={cloudUrl} rel="noopener">
+              {copy.heroPrimary}
+              <span class="arrow" aria-hidden="true"> →</span>
+            </a>
+          ) : (
+            <button
+              class="btn-primary"
+              type="button"
+              disabled
+              aria-disabled="true"
+              data-cloud-unconfigured
+            >
+              {NAV[lang].cloudUnconfigured}
+            </button>
+          )
+        ) : (
+          <div class="hero-copy">
+            <CopyButton text={INSTALL_COMMANDS} label={copy.heroCopy} />
+          </div>
+        )
+      }
+      <a class="btn-ghost" href={copy.heroSecondaryHref}>
+        {copy.heroSecondary}
+        <span class="arrow" aria-hidden="true"> →</span>
+      </a>
+      {
+        variant === 'selfhosted' && demoUrl !== '' && (
+          <a class="btn-ghost" href={demoUrl} rel="noopener" target="_blank">
+            {copy.heroDemo}
+            <span class="arrow" aria-hidden="true"> →</span>
+          </a>
+        )
+      }
+    </div>
+    <p class="hero-spec mono">{t(copy.heroSpec)}</p>
+  </section>
+</div>
+
+<style>
+  .hero-zone {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero {
+    position: relative;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: var(--section-pad-lg) 24px 64px;
+    text-align: center;
+  }
+
+  .announce {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 14px;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    text-decoration: none;
+  }
+
+  .announce:hover {
+    background-color: var(--surface-muted);
+  }
+
+  .announce .arrow {
+    font-size: 0.9em;
+    transition: transform var(--hover-duration) ease;
+  }
+
+  .announce:hover .arrow {
+    transform: translateX(2px);
+  }
+
+  .hero-title {
+    margin: 32px auto 0;
+    max-width: 14ch;
+    font-size: var(--text-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+
+  .hero-lead {
+    margin: 24px auto 0;
+    max-width: 52ch;
+    font-size: var(--text-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tracking-body);
+    color: var(--ink-muted);
+  }
+
+  .hero-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .btn-primary .arrow {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .hero-copy :global(.copy-btn) {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    cursor: pointer;
+  }
+
+  html.js .hero-copy :global(.copy-btn) {
+    display: inline-flex;
+  }
+
+  .hero-copy :global(.copy-btn:hover) {
+    background-color: var(--primary-hover);
+  }
+
+  .hero-copy :global(.copy-btn:active) {
+    transform: translateY(1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--surface-2);
+  }
+
+  .btn-ghost .arrow {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    margin-left: 6px;
+  }
+
+  .hero-spec {
+    margin-top: 24px;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      padding: var(--section-pad) 20px 48px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn-primary,
+    .hero-copy :global(.copy-btn),
+    .btn-ghost {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

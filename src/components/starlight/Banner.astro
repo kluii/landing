@@ -1,0 +1,33 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Starlight Banner override: v1 pages are a frozen archive (L2-04) and carry a banner.
+// The frozen markdown files stay byte-untouched, so the banner is rendered from the
+// frontmatter flag instead of being stamped into the synced docs.
+import Default from '@astrojs/starlight/components/Banner.astro';
+
+const frozen = Astro.locals.starlightRoute.entry.data.frozen === true;
+const FROZEN_BANNER = 'Frozen archive of Klui 1.x \u2014 the current documentation is v2.';
+---
+
+{
+  frozen ? (
+    <div class="frozen-banner" data-pagefind-ignore>
+      {FROZEN_BANNER}
+    </div>
+  ) : (
+    <Default {...Astro.props} />
+  )
+}
+
+<style>
+  .frozen-banner {
+    padding: 8px 16px;
+    background-color: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    text-align: center;
+  }
+</style>

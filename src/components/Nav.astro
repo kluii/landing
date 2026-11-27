@@ -1,0 +1,323 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The site nav, variant-aware (ADR-0015 / S-35). Every landing nav carries a
+// real-labelled link to the other landing:
+//   cloud      → Klui · Self-hosted · Changelog · GitHub  + the cloud CTA
+//   selfhosted → Klui · Docs · Cloud · Self-hosted · Changelog · GitHub + the install CTA
+// The cloud CTA href is PUBLIC_CLOUD_URL only; unset in dev it renders disabled
+// (a production build fails on it — content-lint, like the legal placeholders).
+import lightLogo from '../../assets/light-logo.png?url';
+import { LINKS, HAS_FR_ROUTES } from '../data/links.ts';
+import { NAV } from '../data/copy.ts';
+import type { Lang, Variant } from '../data/copy.ts';
+import { VARIANT_ROUTES } from '../data/variants.ts';
+
+interface Props {
+  lang: Lang;
+  variant?: Variant;
+}
+
+const { lang, variant = 'cloud' } = Astro.props;
+const docsPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
+const changelogPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/blog' : '/blog';
+const homePath = VARIANT_ROUTES[lang][variant];
+const otherVariant: Variant = variant === 'cloud' ? 'selfhosted' : 'cloud';
+const otherPath = VARIANT_ROUTES[lang][otherVariant];
+const cloudPath = VARIANT_ROUTES[lang].cloud;
+const selfhostedPath = VARIANT_ROUTES[lang].selfhosted;
+const cloudUrl = LINKS.cloud;
+
+const links =
+  variant === 'cloud'
+    ? [{ href: otherPath, label: NAV[lang].selfhosted }]
+    : [
+        { href: docsPath, label: NAV[lang].docs },
+        { href: cloudPath, label: NAV[lang].cloud },
+        { href: selfhostedPath, label: NAV[lang].selfhosted, current: true },
+      ];
+---
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href={homePath} class="nav-brand" aria-label="Klui — home">
+      <img src={lightLogo} alt="Klui" width="24" height="24" />
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      {
+        links.map((l) => (
+          <a href={l.href} aria-current={l.current ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+      <a href={changelogPath}>{NAV[lang].changelog}</a>
+      <a href={LINKS.github} rel="noopener">{NAV[lang].github}</a>
+      {
+        variant === 'cloud' ? (
+          cloudUrl !== '' ? (
+            <a href={cloudUrl} class="nav-deploy" rel="noopener">
+              {NAV[lang].cloudCta}
+            </a>
+          ) : (
+            <button class="nav-deploy" type="button" disabled aria-disabled="true" data-cloud-unconfigured>
+              {NAV[lang].cloudUnconfigured}
+            </button>
+          )
+        ) : (
+          <a href="#install" class="nav-deploy">
+            {NAV[lang].installCta}
+          </a>
+        )
+      }
+    </nav>
+    <button class="nav-menu" type="button" aria-expanded="false" aria-controls="nav-sheet" aria-label="Menu">
+      <span class="nav-menu-lines" aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="nav-sheet" id="nav-sheet" hidden>
+    <nav aria-label="Mobile">
+      {
+        links.map((l) => (
+          <a href={l.href} aria-current={l.current ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+      <a href={changelogPath}>{NAV[lang].changelog}</a>
+      <a href={LINKS.github} rel="noopener">{NAV[lang].github}</a>
+      {
+        variant === 'cloud' ? (
+          cloudUrl !== '' ? (
+            <a href={cloudUrl} class="nav-deploy" rel="noopener">
+              {NAV[lang].cloudCta}
+            </a>
+          ) : (
+            <button class="nav-deploy" type="button" disabled aria-disabled="true" data-cloud-unconfigured>
+              {NAV[lang].cloudUnconfigured}
+            </button>
+          )
+        ) : (
+          <a href="#install" class="nav-deploy">
+            {NAV[lang].installCta}
+          </a>
+        )
+      }
+    </nav>
+  </div>
+  <noscript>
+    <nav class="nav-noscript" aria-label="Main (no JavaScript)">
+      {
+        links.map((l) => (
+          <a href={l.href} aria-current={l.current ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+      <a href={changelogPath}>{NAV[lang].changelog}</a>
+      <a href={LINKS.github} rel="noopener">{NAV[lang].github}</a>
+      {
+        variant === 'cloud' ? (
+          cloudUrl !== '' ? (
+            <a href={cloudUrl} class="nav-deploy" rel="noopener">
+              {NAV[lang].cloudCta}
+            </a>
+          ) : (
+            <span class="nav-deploy nav-deploy-disabled">{NAV[lang].cloudUnconfigured}</span>
+          )
+        ) : (
+          <a href="#install" class="nav-deploy">
+            {NAV[lang].installCta}
+          </a>
+        )
+      }
+    </nav>
+  </noscript>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.nav-menu');
+  const sheet = document.getElementById('nav-sheet');
+  if (button && sheet) {
+    const open = () => {
+      button.setAttribute('aria-expanded', 'true');
+      sheet.hidden = false;
+      button.setAttribute('aria-label', 'Close menu');
+      (sheet.querySelector('a') as HTMLElement | null)?.focus();
+    };
+    const close = () => {
+      button.setAttribute('aria-expanded', 'false');
+      sheet.hidden = true;
+      button.setAttribute('aria-label', 'Menu');
+      button.focus();
+    };
+    button.addEventListener('click', () => {
+      button.getAttribute('aria-expanded') === 'true' ? close() : open();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') close();
+    });
+    sheet.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) close();
+    });
+  }
+</script>
+
+<style>
+  .site-nav {
+    border-bottom: 1px solid var(--border);
+    background-color: var(--canvas);
+  }
+
+  .nav-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    height: var(--nav-height);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .nav-brand img {
+    height: 24px;
+    width: auto;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-links a {
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+
+  .nav-links a:hover {
+    color: var(--ink);
+  }
+
+  .nav-links a[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  .nav-deploy {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink) !important;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  a.nav-deploy:hover {
+    background-color: var(--surface-2);
+  }
+
+  .nav-deploy:disabled,
+  .nav-deploy-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .nav-menu {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-menu-lines,
+  .nav-menu-lines::before,
+  .nav-menu-lines::after {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background-color: var(--ink);
+    position: relative;
+    content: '';
+  }
+
+  .nav-menu-lines::before {
+    position: absolute;
+    top: -5px;
+  }
+
+  .nav-menu-lines::after {
+    position: absolute;
+    top: 5px;
+  }
+
+  .nav-sheet {
+    border-top: 1px solid var(--border);
+    background-color: var(--canvas);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.55);
+    padding: 8px 20px 24px;
+  }
+
+  .nav-sheet nav {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-sheet a,
+  .nav-sheet button {
+    padding: 12px 0;
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    text-align: left;
+  }
+
+  .nav-sheet .nav-deploy {
+    margin-top: 16px;
+    justify-content: center;
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  /* Without JS the hamburger never opens, so the fallback nav is always visible. */
+  .nav-noscript {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-label);
+  }
+
+  @media (max-width: 767px) {
+    .nav-links {
+      display: none;
+    }
+
+    .nav-menu {
+      display: inline-flex;
+    }
+
+    .nav-noscript {
+      display: flex;
+    }
+  }
+</style>

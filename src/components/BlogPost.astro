@@ -1,0 +1,287 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Blog post page, one markup for both languages (L3-04). The page files own
+// getStaticPaths (it is extracted into its own chunk) and pass lang + entry id.
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import { LINKS } from '../data/links.ts';
+import { BLOG, fill } from '../data/copy.ts';
+import type { Lang } from '../data/copy.ts';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+
+type Post = CollectionEntry<'blog'>;
+const { lang, id } = Astro.props;
+const copy = BLOG[lang];
+const blogBase = lang === 'fr' ? '/fr/blog' : '/blog';
+const slugOf = (p: Post) => p.data.version.replace(/\./g, '-');
+const visible = (p: Post) => p.data.lang === lang && (import.meta.env.PROD ? !p.data.draft : true);
+
+const all = (await getCollection('blog')) as Post[];
+const post = all.find((p: Post) => p.id === id)!;
+const { Content, headings } = await render(post);
+const sorted = all
+  .filter((p: Post) => visible(p))
+  .sort((a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime());
+const index = sorted.findIndex((p: Post) => p.id === post.id);
+const prev = index !== -1 && index + 1 < sorted.length ? sorted[index + 1] : null;
+const toc = headings.filter((h: { depth: number; slug: string; text: string }) => h.depth === 2);
+const otherLang = lang === 'fr' ? 'en' : 'fr';
+const twin = all.find((p: Post) => p.data.lang === otherLang && p.data.version === post.data.version);
+const path = `${blogBase}/${slugOf(post)}`;
+const date = post.data.date.toISOString().slice(0, 10);
+---
+
+<Base
+  title={`${post.data.title} — ${copy.metaTitle}`}
+  description={post.data.description}
+  path={path}
+  lang={lang}
+  ogType="article"
+  frPath={lang === 'en' && twin ? `/fr/blog/${slugOf(twin)}` : undefined}
+  enPath={lang === 'fr' && twin ? `/blog/${slugOf(twin)}` : undefined}
+>
+  <Nav lang={lang} />
+  <main id="main" class="post">
+    <p class="post-meta mono">
+      {post.data.version} · {date}
+    </p>
+    <h1 class="post-title">{post.data.title}</h1>
+    <p class="post-lead">{post.data.description}</p>
+    {
+      toc.length > 0 && (
+        <nav class="toc" aria-label={copy.tocLabel}>
+          <p class="toc-label mono">{copy.tocLabel}</p>
+          <ul>
+            {toc.map((h: { depth: number; slug: string; text: string }) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+    <article class="post-body">
+      <Content />
+    </article>
+    <footer class="post-footer">
+      {
+        prev && (
+          <a class="prev-link" href={`${blogBase}/${slugOf(prev)}`}>
+            ← {copy.prev} {prev.data.title}
+          </a>
+        )
+      }
+      <a
+        class="tag-link mono"
+        href={`${LINKS.github}/releases/tag/v${post.data.version}`}
+        rel="noopener"
+      >
+        {fill(copy.tagLink, { version: post.data.version })} →
+      </a>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  .post {
+    max-width: var(--prose);
+    margin: 0 auto;
+    padding: var(--section-pad) 24px;
+  }
+
+  .post-meta {
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .post-title {
+    margin-top: 8px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--tracking-h1);
+  }
+
+  .post-lead {
+    margin-top: 16px;
+    color: var(--ink-muted);
+    font-size: var(--text-lead);
+    line-height: var(--lh-lead);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .toc {
+    margin-top: 32px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    background-color: var(--surface);
+  }
+
+  .toc-label {
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .toc ul {
+    margin-top: 8px;
+    list-style: none;
+  }
+
+  .toc a {
+    color: var(--ink-muted);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+    text-decoration: none;
+  }
+
+  .toc a:hover,
+  .toc a:focus-visible {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .post-body {
+    margin-top: 40px;
+    font-size: var(--text-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .post-body :is(h2, h3) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .post-body h2 {
+    margin-top: 40px;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-h2);
+  }
+
+  .post-body h3 {
+    margin-top: 32px;
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--tracking-h3);
+  }
+
+  .post-body p {
+    margin-top: 16px;
+  }
+
+  .post-body ul {
+    margin-top: 16px;
+    padding-inline-start: 24px;
+  }
+
+  .post-body li {
+    margin-top: 8px;
+  }
+
+  .post-body a {
+    color: var(--ink);
+    text-underline-offset: 4px;
+  }
+
+  .post-body a:hover {
+    text-decoration: underline;
+  }
+
+  .post-body :not(pre) > code {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inline);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .post-body pre {
+    margin-top: 16px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    line-height: var(--lh-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .post-body pre code {
+    background: none;
+    border: none;
+  }
+
+  .post-body details {
+    margin-top: 16px;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    background-color: var(--surface);
+  }
+
+  .post-body summary {
+    cursor: pointer;
+    color: var(--ink-muted);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+
+  .post-body .mono-sm {
+    margin-top: 40px;
+    color: var(--ink-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .post-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    justify-content: space-between;
+  }
+
+  .prev-link {
+    color: var(--ink);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+    text-underline-offset: 4px;
+  }
+
+  .prev-link:hover {
+    text-decoration: underline;
+  }
+
+  .tag-link {
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    text-decoration: none;
+  }
+
+  .tag-link:hover,
+  .tag-link:focus-visible {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

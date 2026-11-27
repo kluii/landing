@@ -26,8 +26,10 @@ app repo (checkout at tag)          site repo
 
 | Path | Source | Notes |
 |---|---|---|
-| `/` | `src/pages/index.astro` | English landing |
-| `/fr/` | `src/pages/fr/index.astro` | French landing |
+| `/` | `src/pages/index.astro` | English cloud landing (ADR-0015) |
+| `/selfhosted` | `src/pages/selfhosted.astro` | English self-hosting landing |
+| `/fr` | `src/pages/fr/index.astro` | French cloud landing |
+| `/fr/selfhosted` | `src/pages/fr/selfhosted.astro` | French self-hosting landing |
 | `/docs/v2/...` | synced content | Current documentation |
 | `/docs/v1/...` | frozen content | Never edited |
 | `/docs/<slug>.md` | generated at build | Raw markdown twin |
@@ -53,12 +55,14 @@ A build with a schema violation fails; there is no "unknown field" tolerance. `d
 | Component | Responsibility |
 |---|---|
 | `Base.astro` | `<html lang>`, meta, fonts preload, skip link, no-JS fallback |
-| `Nav.astro` | Wordmark, links, sheet under 768 px |
+| `Landing.astro` | One markup for both variants; renders the section registry per `variant` |
+| `Nav.astro` | Wordmark, variant-aware links, sheet under 768 px |
 | `Footer.astro` | Footer rule, links, `Made with <3 by Wyliam`, version line |
-| `Hero.astro` | H1, lead, actions, spec line |
-| `BoardMock.astro` | The DOM board illustration |
+| `Hero.astro` | H1, lead, variant actions, spec line |
+| `AppShot.astro` | The app screenshot slot (`<picture>`, 639 px breakpoint) or its marked placeholder |
+| `PlateShot.astro` / `Plate.astro` | The parchment mat around the app shot, plus its caption |
+| `Pillars` / `HowItWorks` / `InstallSection` / `EndSection` / `AgentsSection` / `LimitsSection` / `FinalCta` | The landing sections, one per file, rendered from `Landing.astro`'s registry |
 | `GlyphGrid.astro` | The SVG texture |
-| `Plate.astro` | The parchment mat around the board mock, plus its caption |
 | `Section.astro` | `h2`, lead, rule, optional mono footnote |
 | `CodeBlock.astro` | `<pre><code>`, language label, copy button |
 | `CopyButton.astro` | The only island; clipboard + `aria-live` |

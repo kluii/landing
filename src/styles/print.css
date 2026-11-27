@@ -1,0 +1,26 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* Docs are printed; the landing is not. White paper, black ink, links with their URL. */
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+  }
+
+  .glyph-grid,
+  .plate,
+  nav,
+  .site-nav,
+  .skip-link {
+    display: none !important;
+  }
+}

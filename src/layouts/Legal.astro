@@ -1,0 +1,97 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import Base from './Base.astro';
+import Nav from '../components/Nav.astro';
+import { legalValue } from '../data/legal.ts';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  lang: 'en' | 'fr';
+  updated: string;
+  frPath?: string;
+  enPath?: string;
+}
+
+const { title, description, path, lang, updated, frPath, enPath } = Astro.props;
+const updatedLabel = legalValue('updatedAt');
+---
+
+<Base
+  title={title}
+  description={description}
+  path={path}
+  lang={lang}
+  ogType="article"
+  frPath={frPath}
+  enPath={enPath}
+>
+  <Nav lang={lang} />
+  <main id="main" class="legal">
+    <h1 class="legal-title">{title}</h1>
+    <p class="legal-updated mono">Last updated: {updatedLabel === '{{UPDATED_AT}}' ? updated : updatedLabel}</p>
+    <div class="legal-body">
+      <slot />
+    </div>
+  </main>
+</Base>
+
+<style>
+  .legal {
+    max-width: var(--prose);
+    margin: 0 auto;
+    padding: var(--section-pad) 24px;
+  }
+
+  .legal-title {
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--tracking-h1);
+  }
+
+  .legal-updated {
+    margin-top: 12px;
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .legal-body {
+    margin-top: 32px;
+  }
+
+  .legal-body :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-h2);
+    margin-top: 48px;
+  }
+
+  .legal-body :global(p),
+  .legal-body :global(li) {
+    font-size: var(--text-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+    color: var(--ink);
+  }
+
+  .legal-body :global(p + p),
+  .legal-body :global(p + ul) {
+    margin-top: 12px;
+  }
+
+  .legal-body :global(ul) {
+    padding-left: 24px;
+  }
+
+  .legal-body :global(li + li) {
+    margin-top: 8px;
+  }
+
+  .legal-body :global(a) {
+    color: var(--ink);
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The install section — self-hosted variant only. The snippet is byte-identical to
+// src/data/snippets.ts wherever it renders (check-landing asserts it).
+import Section from './Section.astro';
+import CodeBlock from './CodeBlock.astro';
+import ArrowLink from './ArrowLink.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { INSTALL_COMMANDS } from '../data/snippets.ts';
+import { LANDING, fill } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+const t = (s: string) =>
+  fill(s, { tools: CLAIMS.tools.value, installInstance: CLAIMS.installInstance.value });
+---
+
+<Section title={copy.installTitle} id="install">
+  <div class="install-grid">
+    <CodeBlock code={INSTALL_COMMANDS} lang="bash" copyLabel={copy.heroCopy} />
+    <div class="install-steps">
+      {(copy.installSteps ?? []).map((step) => <p set:html={t(step)} />)}
+      <p class="install-caption mono" set:html={t(copy.installCaption ?? '')} />
+      {copy.quickstartHref && <ArrowLink href={copy.quickstartHref}>{copy.quickstartLink}</ArrowLink>}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .install-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .install-steps {
+    min-width: 0;
+  }
+
+  .install-steps p + p {
+    margin-top: 12px;
+  }
+
+  .install-steps code {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inline);
+    padding: 0 5px;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .install-caption {
+    color: var(--ink-subtle);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  @media (max-width: 1023px) {
+    .install-grid {
+      /* minmax(0, 1fr): a bare 1fr keeps the track's min-content floor and the <pre>
+         inside the code block pushes the document to 485 px at a 390 px viewport. */
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

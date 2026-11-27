@@ -1,0 +1,23 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// /fr/docs/v2 — French docs index (the [...slug] route skips id "index").
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Prose from '../../../../layouts/Prose.astro';
+
+const all = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
+const entry = all.find((p: CollectionEntry<'docsFr'>) => p.id === 'index')!;
+const { Content } = await render(entry);
+const contentHasH1 = /^#\s/m.test(entry.body.replace(/^```[\s\S]*?^```/gm, ''));
+---
+
+<Prose
+  title={entry.data.title}
+  description={entry.data.description}
+  path="/fr/docs/v2"
+  lang="fr"
+  enPath="/docs/v2"
+  contentHasH1={contentHasH1}
+>
+  <Content />
+</Prose>

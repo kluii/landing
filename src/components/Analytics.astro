@@ -1,0 +1,8 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Off unless PUBLIC_ANALYTICS_URL is set: zero script tags, zero requests, no banner
+// while the cookieless conditions in docs/analytics.md hold.
+const analyticsUrl = import.meta.env.PUBLIC_ANALYTICS_URL ?? '';
+---
+
+{analyticsUrl !== '' && <script defer src={analyticsUrl} data-domain={new URL(analyticsUrl).host} />}

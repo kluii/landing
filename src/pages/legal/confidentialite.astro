@@ -1,0 +1,67 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Politique de confidentialité (FR) — miroir de /legal/privacy (docs/legal.md §4).
+// Ne décrit que les données collectées par ce site : l’analytics optionnel, sans cookie.
+import Legal from '../../layouts/Legal.astro';
+import { legalValue, LINKS } from '../../data/legal-links.ts';
+
+const operator = legalValue('operator');
+const contact = legalValue('contact');
+const region = legalValue('region');
+const analyticsOn = Boolean(import.meta.env.PUBLIC_ANALYTICS_URL);
+---
+
+<Legal
+  title="Confidentialité"
+  description="Ce que ce site collecte : uniquement une mesure d’audience optionnelle, sans cookie. Pas de compte, pas de formulaire, pas de newsletter."
+  path="/legal/confidentialite"
+  lang="fr"
+  enPath="/legal/privacy"
+  updated="2026-11-26"
+>
+  <h2>Ce que ce site collecte</h2>
+  <p>
+    {analyticsOn
+      ? 'Ce site charge un unique script de mesure d’audience sans cookie (le point de terminaison configuré à la compilation). Il mesure les pages vues par chemin, hôte référent, classe d’appareil et pays. Il ne dépose aucun cookie, ne stocke rien dans votre navigateur et ne vous suit pas d’un site à l’autre.'
+      : 'Ce site n’effectue aucune mesure. Le point de terminaison d’analytics n’est pas configuré : aucun script n’est chargé, aucune requête ne quitte votre navigateur vers un tiers, et rien n’est collecté.'}
+    Il n’y a aucun compte, aucun formulaire, aucune newsletter et aucun cookie sur ce site.
+  </p>
+
+  <h2>Base légale et durée de conservation</h2>
+  <p>
+    Une mesure d’audience sans cookie ni identifiant persistant relève de l’exemption CNIL
+    pour la mesure d’audience ; la durée de conservation est au plus de 25 mois, et seulement
+    lorsque le point de terminaison d’analytics est configuré. Le site respecte les en-têtes
+    <code>DNT: 1</code> et <code>Sec-GPC: 1</code> : lorsqu’ils sont présents, le script
+    d’analytics n’est pas chargé.
+  </p>
+
+  <h2>Destinataires et transferts</h2>
+  <p>
+    L’hébergeur traite les journaux du serveur (adresse IP, agent utilisateur, chemin demandé)
+    pour la sécurité et la disponibilité, en {region}. Aucune donnée n’est transférée hors de
+    l’Union européenne.
+  </p>
+
+  <h2>Cookies</h2>
+  <p>
+    Ce site ne dépose aucun cookie, dans tous les cas, et n’affiche donc aucune bannière de
+    consentement. Si un cookie était un jour introduit, une bannière offrant un refus aussi
+    simple serait déployée dans le même changement, avant la mise en production suivante.
+  </p>
+
+  <h2>Vos droits</h2>
+  <p>
+    Vous disposez d’un droit d’accès, de rectification, d’effacement et d’opposition sur vos
+    données, ainsi que d’un droit à la portabilité. Pour les exercer, écrivez à
+    <a href={`mailto:${contact}`}>{contact}</a>. Vous pouvez également saisir la
+    <a href={LINKS.cnil} rel="noopener">CNIL</a>.
+  </p>
+
+  <h2>L’application est distincte</h2>
+  <p>
+    Klui est un logiciel auto-hébergé : les données d’une instance auto-hébergée sont sous le
+    contrôle de la personne qui l’exploite ({operator}), pas sous celui de ce site. Cette page
+    ne décrit que le site de {operator}.
+  </p>
+</Legal>

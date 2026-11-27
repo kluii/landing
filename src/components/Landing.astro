@@ -1,0 +1,113 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The landing, one markup for both languages and both variants (ADR-0015 / S-35).
+// `variant` selects the sections from one registry below — the markup is never forked
+// into two files. All copy comes from src/data/copy.ts.
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Hero from './Hero.astro';
+import PlateShot from './PlateShot.astro';
+import Pillars from './Pillars.astro';
+import HowItWorks from './HowItWorks.astro';
+import InstallSection from './InstallSection.astro';
+import EndSection from './EndSection.astro';
+import AgentsSection from './AgentsSection.astro';
+import LimitsSection from './LimitsSection.astro';
+import FinalCta from './FinalCta.astro';
+import { landingPaths } from '../data/variants.ts';
+import { LANDING } from '../data/copy.ts';
+import type { Lang, Variant } from '../data/copy.ts';
+
+interface Props {
+  lang: Lang;
+  variant: Variant;
+}
+
+const { lang, variant } = Astro.props;
+const copy = LANDING[lang][variant];
+const paths = landingPaths(lang, variant);
+
+// One section registry; the variant only chooses the membership and the order.
+const registry = {
+  hero: Hero,
+  plate: PlateShot,
+  pillars: Pillars,
+  how: HowItWorks,
+  install: InstallSection,
+  end: EndSection,
+  agents: AgentsSection,
+  limits: LimitsSection,
+  cta: FinalCta,
+} as const;
+
+type SectionId = keyof typeof registry;
+
+const SECTION_ORDER: Record<Variant, SectionId[]> = {
+  cloud: ['hero', 'plate', 'pillars', 'how', 'limits', 'cta'],
+  selfhosted: ['hero', 'plate', 'pillars', 'install', 'end', 'agents', 'limits', 'cta'],
+};
+---
+
+<Base
+  title={copy.metaTitle}
+  description={copy.metaDescription}
+  path={paths.path}
+  lang={lang}
+  frPath={paths.frPath}
+  enPath={paths.enPath}
+  variant={variant}
+>
+  <Nav lang={lang} variant={variant} />
+  <main id="main">
+    {
+      SECTION_ORDER[variant].map((id) => {
+        const SectionComponent = registry[id];
+        return <SectionComponent lang={lang} variant={variant} />;
+      })
+    }
+  </main>
+</Base>
+
+<script>
+  // One reveal per section: opacity + 8px, 500ms, once. Only enabled when the browser
+  // supports IntersectionObserver and the user allows motion; without JS everything is
+  // already visible.
+  const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (motionOk && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('js-motion');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.15 },
+    );
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  }
+</script>
+
+<style>
+  html.js-motion .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  html.js-motion .reveal.revealed {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--reveal-duration) var(--reveal-ease),
+      transform var(--reveal-duration) var(--reveal-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js-motion .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

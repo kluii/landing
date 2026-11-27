@@ -1,0 +1,52 @@
+{
+  "name": "klui-site",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "description": "Public site for Klui: landing, versioned documentation, changelog and legal pages. Static Astro output, no backend.",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "postbuild": "node scripts/write-headers.mjs && node scripts/og-images.mjs && node scripts/emit-md-twins.mjs && node scripts/patch-docs-chrome.mjs",
+    "preview": "astro preview --host 127.0.0.1 --port 4321",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "astro check",
+    "lint": "eslint . && node scripts/lint-source.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:links": "node scripts/check-links.mjs",
+    "test:a11y": "node scripts/check-a11y.mjs",
+    "test:claims": "node scripts/check-claims.mjs",
+    "test:perf": "node scripts/check-perf.mjs",
+    "test:e2e": "playwright test",
+    "lint:content": "node scripts/content-lint.mjs",
+    "sync-docs": "node scripts/sync-docs.mjs",
+    "changelog": "node scripts/changelog.mjs",
+    "og": "node scripts/og-images.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "test:landing": "node scripts/check-landing.mjs",
+    "test:meta": "node scripts/check-meta.mjs"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@astrojs/sitemap": "3.7.6",
+    "@astrojs/starlight": "0.43.2",
+    "@eslint/js": "10.0.1",
+    "@fontsource-variable/newsreader": "5.3.0",
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@playwright/test": "1.65.1",
+    "@resvg/resvg-js": "2.6.2",
+    "astro": "7.4.13",
+    "axe-core": "4.14.1",
+    "eslint": "10.15.0",
+    "jsdom": "31.0.1",
+    "pagefind": "1.6.0",
+    "prettier": "3.10.1",
+    "typescript": "5.9.3"
+  }
+}

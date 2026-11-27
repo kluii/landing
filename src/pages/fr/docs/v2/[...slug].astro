@@ -1,0 +1,42 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// French site-only docs (L3-04): /fr/docs/v2/<slug> renders src/site-docs/fr/*.md.
+// Snippet and claim markers are replaced here from the single constants, same as
+// the sync does for the EN copies.
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Prose from '../../../../layouts/Prose.astro';
+
+export async function getStaticPaths() {
+  const pages = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
+  return pages
+    .filter((p: CollectionEntry<'docsFr'>) => p.id !== 'index')
+    .map((p: CollectionEntry<'docsFr'>) => ({
+      params: { slug: p.id },
+      props: { id: p.id },
+    }));
+}
+
+const { id } = Astro.props as { id: string };
+const all = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
+const entry = all.find((p: CollectionEntry<'docsFr'>) => p.id === id)!;
+const { Content } = await render(entry);
+const contentHasH1 = /^#\s/m.test(entry.body.replace(/^```[\s\S]*?^```/gm, ''));
+
+// the EN twin is the same slug in the synced docs collection (site pages are merged there)
+const docsEn = (await getCollection('docs')) as CollectionEntry<'docs'>[];
+const enTwin = docsEn.some(
+  (e: CollectionEntry<'docs'>) => e.id === `docs/v2/${id}` || (id === 'index' && e.id === 'docs/v2'),
+);
+---
+
+<Prose
+  title={entry.data.title}
+  description={entry.data.description}
+  path={`/fr/docs/v2/${id}`}
+  lang="fr"
+  enPath={enTwin ? `/docs/v2/${id}` : undefined}
+  contentHasH1={contentHasH1}
+>
+  <Content />
+</Prose>

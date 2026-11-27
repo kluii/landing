@@ -1,0 +1,16 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+import lightLogo from '../../assets/light-logo.png?url';
+import { footerHtml } from './footer-html.ts';
+import type { Lang, Variant } from '../data/copy.ts';
+
+interface Props {
+  path: string;
+  lang: Lang;
+  variant?: Variant | undefined;
+}
+
+const { lang, variant } = Astro.props;
+---
+
+<Fragment set:html={footerHtml(lightLogo, lang, variant)} />

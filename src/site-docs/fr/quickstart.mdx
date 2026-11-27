@@ -1,0 +1,55 @@
+---
+title: 'Démarrage rapide'
+description: 'Un fichier compose vers un tableau fonctionnel : clonez le dépôt, renseignez une variable, lancez docker compose up.'
+---
+
+import InstallBlock from '../../components/InstallBlock.astro';
+import { CLAIMS } from '../../data/claims.ts';
+
+# Démarrage rapide
+
+Trois commandes, un conteneur. Postgres 16 est inclus dans le fichier compose ;
+rien d’autre n’est requis, et rien ne se trouve derrière une clé de licence.
+
+<InstallBlock />
+
+Le tableau répond alors sur `http://localhost:8080`. Entre le démarrage à froid et un
+tableau fonctionnel, il faut moins de {CLAIMS.installMinutes.value} minutes sur une instance 2 vCPU / 2 Go.
+
+## 1. Renseigner l’URL publique
+
+Ouvrez `.env` et renseignez la seule variable requise en production :
+
+```bash
+# .env — l’URL https absolue à laquelle l’instance est joignable
+KLUI_PUBLIC_URL=https://klui.example.com
+```
+
+`KLUI_PORT` vaut `8080` par défaut et n’intervient que côté hôte du mapping de port.
+Les secrets (`KLUI_SESSION_SECRET`, `KLUI_TOKEN_PEPPER`, `KLUI_ENCRYPTION_KEY`) sont
+générés au premier démarrage dans le volume `secrets` si vous ne les définissez pas ;
+définissez-les vous-même si vous préférez les garder hors du répertoire de données. Voir
+[déploiement](/docs/v2/deployment) pour la référence complète des variables d’environnement.
+
+## 2. Démarrer
+
+```bash
+docker compose up -d
+```
+
+## 3. Créer le premier compte
+
+Au premier chargement, vous êtes redirigé vers `/signup`. Le premier compte créé devient
+l’administrateur de l’instance. L’inscription peut ensuite être fermée avec
+`KLUI_REGISTRATION_OPEN=false`.
+
+## Arrêter en gardant les données
+
+`docker compose down` conserve le volume de données. `docker compose down -v` le supprime.
+
+## Ensuite
+
+- [Déploiement](/docs/v2/deployment) — configs Caddy et Traefik, exercice de sauvegarde et restauration, montée de version et retour arrière
+- [Référence MCP](/docs/v2/mcp) — les {CLAIMS.tools.value} outils, les clés d’agent par tableau
+- [Permissions](/docs/v2/permissions) — qui peut lire, écrire, clôturer, exporter
+- [Limites](/fr/docs/v2/limits) — ce que la 2.0 ne fait pas

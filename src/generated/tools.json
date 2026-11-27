@@ -1,0 +1,91 @@
+{
+  "count": 21,
+  "tools": [
+    {
+      "name": "list_boards",
+      "args": "()"
+    },
+    {
+      "name": "get_board",
+      "args": "({board})"
+    },
+    {
+      "name": "create_board",
+      "args": "({name, visibility?})"
+    },
+    {
+      "name": "update_board",
+      "args": "({board, name?, visibility?, link_role?, anon_write?, slug?})"
+    },
+    {
+      "name": "delete_board",
+      "args": "({board, confirm: true})"
+    },
+    {
+      "name": "create_column",
+      "args": "({board, name, position?})"
+    },
+    {
+      "name": "update_column",
+      "args": "({board, column, name?, position?})"
+    },
+    {
+      "name": "delete_column",
+      "args": "({board, column})"
+    },
+    {
+      "name": "create_card",
+      "args": "({board, column, title, description?, assignee?, due_at?, tags?})"
+    },
+    {
+      "name": "bulk_create_cards",
+      "args": "({board, column, items:[{title, description?, assignee?, due_at?, tags?, done?}]})"
+    },
+    {
+      "name": "get_card",
+      "args": "({board, card})"
+    },
+    {
+      "name": "update_card",
+      "args": "({board, card, title?, description?, assignee?, due_at?, tags?, done?, expected_updated_at?})"
+    },
+    {
+      "name": "move_card",
+      "args": "({board, card, column, before?, after?})"
+    },
+    {
+      "name": "set_card_done",
+      "args": "({board, card, done})"
+    },
+    {
+      "name": "delete_card",
+      "args": "({board, card})"
+    },
+    {
+      "name": "list_comments",
+      "args": "({board, card})"
+    },
+    {
+      "name": "create_comment",
+      "args": "({board, card, body})"
+    },
+    {
+      "name": "search_cards",
+      "args": "({board, query?, assignee?, tags?, done?, column?})"
+    },
+    {
+      "name": "get_activity",
+      "args": "({board, since?, limit?})"
+    },
+    {
+      "name": "export_board",
+      "args": "({board, format:\"json\"|\"md\"})"
+    },
+    {
+      "name": "whoami",
+      "args": "()"
+    }
+  ],
+  "source": "klui/docs/mcp.md §3 tool table",
+  "app_version": "2.0.0"
+}
