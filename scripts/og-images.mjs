@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Build-time OG images (docs/seo.md §3): one SVG template rendered to 1200x630 PNG per
 // built page via @resvg/resvg-js. Geometry is asserted by tests/og.test.mjs.
+// Colours are parsed from src/styles/tokens.css — no hex lives in this file, so the OG
+// canvas can never drift from the site canvas (ADR-0015).
 import { ogNameFor } from '../src/data/og.ts';
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -11,6 +13,21 @@ const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
 const DIST = join(ROOT, 'dist');
 const SITE = process.env.PUBLIC_SITE_URL ?? 'https://klui.wyliam.dev';
 const HOST = new URL(SITE).host;
+
+function token(name) {
+  const css = readFileSync(join(ROOT, 'src', 'styles', 'tokens.css'), 'utf8');
+  const m = css.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
+  if (!m) throw new Error(`og-images: token --${name} missing from tokens.css`);
+  return m[1];
+}
+
+const COLORS = {
+  canvas: token('canvas'),
+  border: token('border'),
+  ink: token('ink'),
+  inkSubtle: token('ink-subtle'),
+  plate: token('plate'),
+};
 
 export const OG_W = 1200;
 export const OG_H = 630;
@@ -62,18 +79,18 @@ export function svgTemplate({ title, section }) {
     )
     .join('\n  ');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_W}" height="${OG_H}" viewBox="0 0 ${OG_W} ${OG_H}">
-  <rect width="${OG_W}" height="${OG_H}" fill="#121110"/>
-  <rect x="24" y="24" width="${OG_W - 48}" height="${OG_H - 48}" fill="none" stroke="#2C2A27"/>
+  <rect width="${OG_W}" height="${OG_H}" fill="${COLORS.canvas}"/>
+  <rect x="24" y="24" width="${OG_W - 48}" height="${OG_H - 48}" fill="none" stroke="${COLORS.border}"/>
   <text x="${MARGIN}" y="${WORDMARK_BASELINE}" class="wordmark">Klui</text>
   ${section ? `<text x="${OG_W - MARGIN}" y="${WORDMARK_BASELINE - 8}" class="section" text-anchor="end">${escapeXml(section)}</text>` : ''}
   ${texts}
   <text x="${MARGIN}" y="${FOOTER_BASELINE}" class="footer">${escapeXml(HOST)}</text>
-  <rect x="0" y="${OG_H - 24}" width="${OG_W}" height="24" fill="#E9E5DD"/>
+  <rect x="0" y="${OG_H - 24}" width="${OG_W}" height="24" fill="${COLORS.plate}"/>
   <style>
-    .wordmark { font-family: 'Newsreader', Georgia, serif; font-size: 40px; fill: #F4F1EB; }
-    .title { font-family: 'Newsreader', Georgia, serif; font-size: ${TITLE_SIZE}px; fill: #F4F1EB; letter-spacing: -0.02em; }
-    .section { font-family: 'JetBrains Mono', monospace; font-size: 20px; fill: #948E85; }
-    .footer { font-family: 'JetBrains Mono', monospace; font-size: 20px; fill: #948E85; }
+    .wordmark { font-family: 'Newsreader', Georgia, serif; font-size: 40px; fill: ${COLORS.ink}; }
+    .title { font-family: 'Newsreader', Georgia, serif; font-size: ${TITLE_SIZE}px; fill: ${COLORS.ink}; letter-spacing: -0.02em; }
+    .section { font-family: 'JetBrains Mono', monospace; font-size: 20px; fill: ${COLORS.inkSubtle}; }
+    .footer { font-family: 'JetBrains Mono', monospace; font-size: 20px; fill: ${COLORS.inkSubtle}; }
   </style>
 </svg>`;
 }

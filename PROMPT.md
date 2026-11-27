@@ -61,7 +61,7 @@ If a skill is not installed in your harness, say so once in the verify file and 
 1. **Astro + Starlight, static output.** No SSR adapter, no serverless function, no API route that does work at request time. `dist/` is the product.
 2. **No client framework.** No React, Vue, Svelte, Solid. The only client JavaScript is what Astro ships for the copy button, the mobile menu, the changelog filter, and Starlight's own bundles.
 3. **No emoji in the UI**, in any language, at any size. Icons are stroke-only inline SVG, 16 or 20 px, drawn once in one component. The site uses typographic arrows (`→`) in mono rather than icons wherever a word or an arrow will do.
-4. **Dark only.** One theme, warm graphite (`--canvas #121110`), no toggle, no flash of light. `color-scheme: dark` on `html`, plus a print stylesheet for docs.
+4. **Dark only.** One theme, neutral near-black (`--canvas #0b0b0c`), no toggle, no flash of light. `color-scheme: dark` on `html`, plus a print stylesheet for docs.
 5. **Monochrome chrome, editorial type.** The site's surfaces, type and rules are grayscale; colour appears only **inside the illustration** (the board mock, screenshots) and comes from the application's tag palette. Three voices, never mixed: Newsreader for headlines only, Inter with positive tracking for body, JetBrains Mono for facts. The positive tracking is the signature and must not be "corrected". Controls are pills (9999 px), surfaces are 8 px, and the product sits on one paper plate.
 6. **Every number on the site is greppable in the application.** Tool count, install time, retention, version, licence. The claims manifest (`src/data/claims.ts`) names the source and the app version it was verified against; a release build fails when a claim is unverified.
 7. **No claim that the app cannot back.** No "unhackable", no "bot-proof", no "hacker-proof", no "AI-powered everything". No comparison that is false: Trello does have free guests; the real gaps are "no MCP for board guests" and "no board re-creation from an export".
@@ -172,7 +172,7 @@ The application repository owns the technical content (`docs/*.md` there). The s
 
 `DESIGN.md` is the source of truth. The rules that get broken first:
 
-1. **One theme, warm graphite.** `--canvas #121110`, ink `#F4F1EB`, parchment plate `#E9E5DD`. Warm neutrals only (`R > G > B` by 1–3): a cool gray breaks the parchment lineage. No tinted sections, no coloured panels, no glow, no gradient. Controls are pills (9999 px), surfaces 8 px; the board mock keeps the app's 4/8 px.
+1. **One theme, neutral near-black.** `--canvas #0b0b0c`, ink `#F5F5F5`, parchment plate `#E9E5DD` (the only warm surface). Dark-ramp neutrals only (`max−min ≤ 3` chroma); the plate keeps the parchment lineage. No tinted sections, no coloured panels, no glow, no gradient. Controls are pills (9999 px), surfaces 8 px; the board mock keeps the app's 4/8 px.
 2. **Three voices, never mixed.** Serif announces (headlines only, weight 400, never below 24 px), sans explains (16 px body at +0.02em), mono states (versions, counts, code). No uppercase, no letter-spaced capitals, no eyebrow, no serif in a paragraph or a button.
 3. **Hairlines, not shadows.** Sections are separated by a 1 px rule and 96–120 px of space. Nothing floats; the only shadow in the system is the mobile sheet's backdrop.
 4. **The plate is the only light surface.** One parchment panel holds the product mock; the paper pill is the only filled control. Two plates on a page, or a plate inside a card, is a layout bug.

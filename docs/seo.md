@@ -24,11 +24,11 @@ Per page: `og:type` (`website` for landing/legal, `article` for posts, `article`
 
 The OG image is generated at build:
 
-- Canvas `#121110`, 1 px `#2C2A27` inset border at 24 px, wordmark top-left at 40 px.
-- Title: Newsreader 400, 64 px, -0.02em, `#F4F1EB`, max 3 lines, bottom-anchored so a long title cannot overlap the footer.
-- Section label in JetBrains Mono 20 px, `#948E85`, top-right.
-- Footer line: `klui.wyliam.dev` in mono, `#948E85`.
-- A small parchment plate strip (24 px, `#E9E5DD`) along the bottom edge, as the one link to the landing's plate device.
+- Canvas `#0B0B0C` (parsed from `tokens.css` at build), 1 px `--border` inset border at 24 px, wordmark top-left at 40 px.
+- Title: Newsreader 400, 64 px, -0.02em, `--ink`, max 3 lines, bottom-anchored so a long title cannot overlap the footer.
+- Section label in JetBrains Mono 20 px, `--ink-subtle`, top-right.
+- Footer line: `klui.wyliam.dev` in mono, `--ink-subtle`.
+- A small parchment plate strip (24 px, `--plate`) along the bottom edge, as the one link to the landing's plate device.
 - Geometry is asserted in a test: the gap between the last title line and the footer is ≥ 40 px for one-, two- and three-line titles.
 
 ## 4. Structured data

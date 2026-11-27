@@ -5,26 +5,26 @@
   :root {
     color-scheme: dark;
 
-    /* graphite ramp (warm: R > G > B) */
-    --canvas: #121110;
-    --surface: #191817;
-    --surface-2: #201e1c;
-    --surface-muted: #262421;
-    --border: #2c2a27;
-    --border-strong: #413d38;
-    --ink: #f4f1eb;
-    --ink-muted: #ada79e;
-    --ink-subtle: #948e85;
-    --primary: #f5f2ec;
-    --primary-hover: #fffdf8;
-    --primary-foreground: #14120f;
+    /* neutral ramp (chroma <= 3: max(R,G,B) - min(R,G,B)); the plate is the only warm surface */
+    --canvas: #0b0b0c;
+    --surface: #121213;
+    --surface-2: #171718;
+    --surface-muted: #1e1e1f;
+    --border: #2a2a2c;
+    --border-strong: #3f3f42;
+    --ink: #f5f5f5;
+    --ink-muted: #a3a3a3;
+    --ink-subtle: #8c8c8c;
+    --primary: #f5f5f5;
+    --primary-hover: #ffffff;
+    --primary-foreground: #0e0e10;
     --plate: #e9e5dd;
     --plate-ink: #14120f;
     --plate-muted: #5f5a52;
     --danger: #e8836f;
-    --focus: #f5f2ec;
-    --selection: #2e2b27;
-    --glyph: #1e1c19;
+    --focus: #f5f5f5;
+    --selection: #333336;
+    --glyph: #1e1e20;
 
     /* type voices */
     --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;

@@ -3,7 +3,7 @@ version: alpha
 name: Klui Site
 description: An editorial broadsheet on graphite. Serif headlines over spaced sans-serif body, pill controls, hairline rules, one paper plate for the product. No shadow, no gradient, no brand hue.
 colors:
-  canvas: "#121110"
+  canvas: "#0B0B0C"
   surface: "#191817"
   surface-2: "#201E1C"
   surface-muted: "#262421"
@@ -227,7 +227,7 @@ components:
 
 The source of truth for `klui-site`. A component that disagrees is wrong, even when it looks fine. A token that is not here does not exist.
 
-This revision takes **Midday** (the supplied style reference) as its structural model and inverts it onto Klui's graphite ground. §0 states exactly what was kept, changed and refused, so the direction can be vetoed in one read rather than discovered after a build.
+This revision takes **Midday** (the supplied style reference) as its structural model and inverts it onto Klui's near-black ground. §0 states exactly what was kept, changed and refused, so the direction can be vetoed in one read rather than discovered after a build.
 
 ---
 
@@ -235,24 +235,24 @@ This revision takes **Midday** (the supplied style reference) as its structural 
 
 | Midday device | Klui ruling |
 |---|---|
-| **Light parchment canvas** (`#dbdad7`) | **Inverted.** The site stays dark (standing instruction): a warm graphite `#121110`, not a neutral black. The parchment survives as the **plate** — one paper panel that holds the product (§11). |
+| **Light parchment canvas** (`#dbdad7`) | **Inverted.** The site stays dark (standing instruction): a desaturated near-black `#0B0B0C`, not a warm graphite. The parchment survives as the **plate** — one paper panel that holds the product (§11), the only warm surface on the page. |
 | **Serif display** (Hedvig 72 px, weight 400, -0.025em) | **Kept, re-cast** as Newsreader 400 at 76 px. A serif headline is the whole point: it is what stops the page reading like every other developer landing. |
 | **Spaced sans body** (+0.05em at 14 px, +0.025em at 16 px and up) | **Kept**, slightly calmed to +0.04em / +0.02em for a 16 px body. Positive tracking is the editorial signature; it is not a bug to tighten later. |
 | **Pill controls** (9999 px on every interactive element) | **Kept on the site only.** The app keeps 4/8 px: a dense tool with pill controls reads like a toy. Marketing and product are different density contexts, and the split is deliberate. |
-| **Hairline borders in the canvas colour** | **Kept in spirit, adjusted in value.** "Engraved" needs light-on-light; on graphite a border must be *lighter* than the ground (`#2C2A27` on `#121110`, 1.32:1) to read as a seam. |
+| **Hairline borders in the canvas colour** | **Kept in spirit, adjusted in value.** "Engraved" needs light-on-light; on near-black a border must be *lighter* than the ground (`#2A2A2C` on `#0B0B0C`, 1.37:1) to read as a seam. |
 | **Flat: zero shadow, zero gradient** | **Kept.** The only depth cues are the surface step, the hairline, and the plate. |
 | **One functional colour** (moss `#4caf50`, data only) | **Refused.** The app has no success colour, and the mock must match the app. Colour exists only inside the illustration, as the user's own tag chips. |
 | **Dark product screenshot frame** | **Inverted into the plate**: a parchment mat around the dark app mock. Same compositional job — the product is the only depth — opposite polarity. |
 | **Centred hero; dropdown carets; trust line; logo wall** | **Partly refused.** The centred headline is kept (a broadsheet masthead); carets, trust line and logo wall are dropped — there are no customers to show and no menus to hide links in. |
 | **Pricing toggle, pricing cards, integration pills** | **Not applicable.** No hosted pricing, no integration marketplace. |
 
-Three things are therefore **new** and specific to Klui: the warm graphite ground, the paper plate as the only light surface, and a mono ledger voice (versions, counts, dates) that Midday does not have.
+Three things are therefore **new** and specific to Klui: the neutral black ground, the paper plate as the only light and warm surface, and a mono ledger voice (versions, counts, dates) that Midday does not have.
 
 ---
 
 ## 1. Overview
 
-A broadsheet translated to a product page. One serif headline announces; spaced sans explains; mono states facts; the product is printed on a paper plate. Everything is flat, everything is a hairline, and the page has exactly two light surfaces — the plate and the primary pill — on a warm near-black ground.
+A broadsheet translated to a product page. One serif headline announces; spaced sans explains; mono states facts; the product is printed on a paper plate. Everything is flat, everything is a hairline, and the page has exactly two light surfaces — the plate and the primary pill — on a neutral near-black ground.
 
 Three principles:
 
@@ -270,28 +270,29 @@ Three principles:
 
 | Token | Value | Role | Measured |
 |---|---|---|---|
-| `--canvas` | `#121110` | Page ground, warm near-black | — |
-| `--surface` | `#191817` | Code blocks, callouts | ink 15.73 |
-| `--surface-2` | `#201E1C` | Board columns, pills, inline code | ink 14.74 |
-| `--surface-muted` | `#262421` | Board cards, table head, inset | ink 13.73 |
-| `--border` | `#2C2A27` | Hairline seam | 1.32 vs canvas |
-| `--border-strong` | `#413D38` | Visible divider, ghost-pill outline | 1.75 vs canvas |
-| `--ink` | `#F4F1EB` | Headlines, body, code | 16.73 / 15.73 / 14.74 / 13.73 (canvas / surface / surface-2 / muted) |
-| `--ink-muted` | `#ADA79E` | Nav, secondary copy, lead after the first line | 7.90 / 7.43 / 6.96 / 6.48 |
-| `--ink-subtle` | `#948E85` | Captions, mono metadata, footer | 5.81 / 5.46 / 5.12 / 4.77 |
-| `--primary` | `#F5F2EC` | Primary pill fill ("paper") | 16.73 with foreground |
-| `--primary-foreground` | `#14120F` | Text on paper | 16.73 |
-| `--plate` | `#E9E5DD` | The product plate (parchment) | 15.01 vs canvas |
+| `--canvas` | `#0B0B0C` | Page ground, desaturated near-black | — |
+| `--surface` | `#121213` | Code blocks, callouts | ink 17.17 |
+| `--surface-2` | `#171718` | Board columns, pills, inline code | ink 16.43 |
+| `--surface-muted` | `#1E1E1F` | Board cards, table head, inset | ink 15.28 |
+| `--border` | `#2A2A2C` | Hairline seam | 1.37 vs canvas |
+| `--border-strong` | `#3F3F42` | Visible divider, ghost-pill outline | 1.87 vs canvas |
+| `--ink` | `#F5F5F5` | Headlines, body, code | 18.05 / 17.17 / 16.43 / 15.28 (canvas / surface / surface-2 / muted) |
+| `--ink-muted` | `#A3A3A3` | Nav, secondary copy, lead after the first line | 7.80 / 7.42 / 7.10 / 6.60 |
+| `--ink-subtle` | `#8C8C8C` | Captions, mono metadata, footer | 5.85 / 5.57 / 5.33 / 4.95 |
+| `--primary` | `#F5F5F5` | Primary pill fill | 17.69 with foreground |
+| `--primary-foreground` | `#0E0E10` | Text on the primary pill | 17.69 |
+| `--plate` | `#E9E5DD` | The product plate (parchment, the only warm surface) | 15.66 vs canvas |
 | `--plate-ink` | `#14120F` | Text printed on the plate | 14.88 |
 | `--plate-muted` | `#5F5A52` | Caption and meta on the plate | 5.44 |
-| `--danger` | `#E8836F` | Error text only | 7.10 / 6.68 |
-| `--focus` | `#F5F2EC` | Focus ring | 17.6 vs canvas |
-| `--selection` | `#2E2B27` | Text selection | — |
-| `--glyph` | `#1E1C19` | ASCII grid glyphs | 1.13 vs canvas |
+| `--danger` | `#E8836F` | Error text only | 7.41 / 7.05 |
+| `--focus` | `#F5F5F5` | Focus ring | 18.05 vs canvas |
+| `--selection` | `#333336` | Text selection | — |
+| `--glyph` | `#1E1E20` | ASCII grid glyphs | 1.18 vs canvas |
 
 Rules:
 
-- **Warm, never tinted.** Every neutral has a slight red-yellow bias (`R > G > B` by 1–3). A cool gray (`#121212`, `#1f2937`) breaks the parchment lineage and is a defect.
+- **Neutral, never tinted.** Every token on the dark ramp satisfies `max(R,G,B) − min(R,G,B) ≤ 3` — a desaturated near-black ground, so the canvas reads black graphite, not brown. A warm cast (`R > G > B` by more than 3) or a cool one (blue bias) is a defect; the neutrality test fails the gate (ADR-0015).
+- The **plate is the single warm element** (`--plate`, `--plate-ink`, `--plate-muted` keep `R > G > B`): a sheet of paper on black.
 - Text contrast is measured against the surface it sits on. A caption inside a code block is measured against `--surface`.
 - Hairlines are decorative (1.3–1.8). Anything a user must perceive as a control boundary uses `--border-strong` at ≥ 3:1 against its own fill, or a fill change.
 - `--ink-subtle` is legal at 12–13 px on every surface (4.77 minimum). It is not body copy.
@@ -385,7 +386,7 @@ Flat, like the reference.
 
 - No `box-shadow` on any component. The mobile sheet gets the only one (`0 -8px 40px rgba(0,0,0,.55)`).
 - No gradient. The glyph grid is flat ink on flat ground.
-- Depth is three things: the **plate** (a light surface on graphite), the **surface step** (canvas → surface → surface-2 → surface-muted), and the **hairline**.
+- Depth is three things: the **plate** (a light surface on near-black), the **surface step** (canvas → surface → surface-2 → surface-muted), and the **hairline**.
 - The plate sits directly on the canvas: no offset, no rotation, no shadow — a printed plate, not a floating card.
 - Scrollbars: thin, `--border-strong` thumb, transparent track.
 
@@ -473,7 +474,7 @@ Flat, like the reference.
 
 ## 11. Imagery: the plate
 
-The reference's strongest move is a single product screenshot framed as the only depth on a flat page. Klui inverts the polarity: **a parchment plate on a graphite page**, holding a dark board mock.
+The reference's strongest move is a single product screenshot framed as the only depth on a flat page. Klui inverts the polarity: **a parchment plate on a near-black page**, holding the app screenshot.
 
 - The mock is **HTML**, not a screenshot: 288 px columns, `--surface-2` wells, `--surface-muted` cards, tag chips from the app palette, mono metadata, one done card. It stays crisp at any zoom and cannot go stale.
 - The plate is the only light surface. Mat 16 px; the mock keeps a 1 px seam; no shadow, no rotation, no perspective.
@@ -543,7 +544,7 @@ Full policy in `docs/content.md`. The design-relevant part:
 - Fonts: Newsreader (variable, 400, latin), Inter (400/500), JetBrains Mono (400). Three woff2, preload serif + sans regular, total ≤ 150 KB, `font-display: swap`, `size-adjust` on fallbacks so CLS stays 0.
 - Tracking is a token, never a component decision: `--tracking-body: 0.02em`, `--tracking-small: 0.04em`, `--tracking-label: 0.05em`, `--tracking-display: -0.025em`. A component that sets its own `letter-spacing` is a defect.
 - Radii: `--radius-pill: 9999px` only on controls and badges; `--radius-surface: 8px` on plate/code/card/callout/sheet; `--radius-inline: 4px` on inline code only.
-- The warm-neutral rule is tested: every neutral token must satisfy `R > G > B` with a delta of 1–3. It is what keeps the palette from drifting cool.
+- The neutral-ground rule is tested: every dark-ramp token must satisfy `max(R,G,B) − min(R,G,B) ≤ 3`, and the plate tokens must stay warm (`R > G > B`). It is what keeps the palette from drifting brown or cool.
 - A stylelint rule rejects hex/`rgb()`/`hsl()` outside `tokens.css`, and `letter-spacing` outside the token definitions.
 - The contrast test parses `tokens.css` and checks `--ink`, `--ink-muted`, `--ink-subtle` against `--canvas`, `--surface`, `--surface-2`, `--surface-muted`; `--plate-ink` and `--plate-muted` against `--plate`; `--primary-foreground` against `--primary`. It fails if a token drops below 4.5:1 anywhere.
 - A geometry test asserts the hero `h1` is the LCP candidate (no `img` or `background-image` above the fold), that the plate never exceeds the container width, and that the plate is the only element with a computed background of `--plate`.

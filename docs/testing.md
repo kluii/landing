@@ -16,6 +16,7 @@ The site has few moving parts, so the tests are about the things that rot silent
 | Accessibility | axe on every built route | `npm run test:a11y` |
 | Performance | JS/CSS budgets, LCP, CLS | `npm run test:perf` |
 | OG geometry | Title/footers never overlap, for 1–3 lines | `npm test` (unit) |
+| e2e (Playwright) | Landing split, cross-links, per-route canonical, and the responsive guard: 390/768/1440 px on `/`, `/selfhosted`, `/fr`, `/fr/selfhosted`, one `/docs/v2/` page — `scrollWidth === clientWidth` and no element past the viewport unless contained | `npm run test:e2e` (build + preview first; CI job `e2e`) |
 | Visual | 390 px and 1440 px captures reviewed by eye | manual, recorded |
 
 ## 2. Link gate
@@ -44,7 +45,7 @@ Output is one line per broken target, with the source page. The gate fails on th
 - **Placeholders:** in a production build (`NODE_ENV=production`), any `{{...}}` in the output fails, naming the field.
 - **Footer:** every page contains `Made with <3 by Wyliam` linking to `https://wyliam.dev`.
 - **Tracking:** `letter-spacing` may only be declared in `tokens.css`; a component that sets its own fails. A visual check confirms body text is not `letter-spacing: normal`.
-- **Warm neutrals:** every neutral token satisfies `R > G > B` with a delta of 1-3; a cool gray in the palette fails the test.
+- **Neutral ground:** every dark-ramp token satisfies `max(R,G,B) − min(R,G,B) ≤ 3` (a warm or cool cast fails); the plate tokens stay warm (`R > G > B`).
 
 ## 5. Performance budget
 
@@ -66,6 +67,7 @@ The budget is enforced by a Lighthouse CI assertion file with hard fail threshol
 ## 6. Accessibility
 
 - axe runs on every route in `dist/` (skip `/404`? no — include it), zero violations, not "zero serious".
+- Exactly one `h1` per built page (static assertion in check-a11y; the docs chrome hides its own title when the synced markdown carries one — L5).
 - A keyboard walk: skip link → nav → hero actions → mock (skipped, `aria-hidden`) → sections → footer, with a visible ring at every stop.
 - The sheet: opens, traps focus, `Esc` closes, focus returns to the trigger.
 - `prefers-reduced-motion` disables the reveal and the arrow transition.

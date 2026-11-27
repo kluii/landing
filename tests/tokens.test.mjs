@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Token tests (DESIGN.md §16): warm neutrals, measured contrast of every text token
-// against every surface it can sit on, dark-only (no prefers-color-scheme block),
-// letter-spacing only in tokens.css.
+// Token tests (DESIGN.md §16): neutral near-black ground (chroma <= 3 on the dark ramp),
+// the plate as the only warm surface, measured contrast of every text token against every
+// surface it can sit on, dark-only (no prefers-color-scheme block), letter-spacing only
+// in tokens.css.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -33,7 +34,7 @@ function contrast(a, b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-const NEUTRALS = [
+const DARK_RAMP = [
   'canvas',
   'surface',
   'surface-2',
@@ -46,41 +47,31 @@ const NEUTRALS = [
   'primary',
   'primary-hover',
   'primary-foreground',
-  'plate',
-  'plate-ink',
-  'plate-muted',
   'focus',
   'selection',
   'glyph',
 ];
 
-test('every neutral token is warm: R > G > B (a cool gray breaks the parchment lineage)', () => {
-  for (const name of NEUTRALS) {
+const PLATE_TOKENS = ['plate', 'plate-ink', 'plate-muted'];
+
+test('the dark ramp is neutral: max(R,G,B) - min(R,G,B) <= 3 (a warm or cool cast fails the gate)', () => {
+  for (const name of DARK_RAMP) {
+    const c = token(name);
+    const chroma = Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b);
+    assert.ok(
+      chroma <= 3,
+      `--${name} ${c.hex} has chroma ${chroma} > 3: ${c.r},${c.g},${c.b} — the canvas must stay desaturated`,
+    );
+  }
+});
+
+test('the plate is the single warm element: R > G > B (paper on black, not a grey card)', () => {
+  for (const name of PLATE_TOKENS) {
     const c = token(name);
     assert.ok(
       c.r > c.g && c.g > c.b,
       `--${name} ${c.hex} is not warm (R>G>B): ${c.r},${c.g},${c.b}`,
     );
-  }
-});
-
-test('dark-ramp tokens keep the 1-3 adjacent delta of DESIGN.md §2.1 where the table allows it', () => {
-  // DESIGN.md §2.1 says "delta of 1-3" but its own table has larger deltas on the light
-  // tokens (#413D38, #F4F1EB). The testable intent is the warm bias (above); here we
-  // assert the dark ramp stays tight so the ground cannot drift cool or muddy.
-  for (const name of [
-    'canvas',
-    'surface',
-    'surface-2',
-    'surface-muted',
-    'border',
-    'glyph',
-    'selection',
-    'primary-foreground',
-  ]) {
-    const c = token(name);
-    assert.ok(c.r - c.g >= 1 && c.r - c.g <= 4, `--${name} R-G delta ${c.r - c.g}`);
-    assert.ok(c.g - c.b >= 1 && c.g - c.b <= 4, `--${name} G-B delta ${c.g - c.b}`);
   }
 });
 
