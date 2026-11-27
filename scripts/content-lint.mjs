@@ -85,7 +85,7 @@ export function hasFooter(html) {
 
 // CTA labels are sentence case: one leading capital, not shouting, no trailing period,
 // no title-cased words after the first (acronyms like MCP and the proper noun Klui excepted).
-const CTA_PROPER_NOUNS = new Set(['Klui']);
+const CTA_PROPER_NOUNS = new Set(['Klui', 'Cloud']);
 export function ctaCaseOk(label) {
   const t = label.trim();
   if (!/^[A-ZÀ-ÖØ-Þ]/.test(t)) return false;
