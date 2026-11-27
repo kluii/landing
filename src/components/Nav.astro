@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 import lightLogo from '../../assets/light-logo.png?url';
 import { LINKS, HAS_FR_ROUTES } from '../data/links.ts';
+import { NAV } from '../data/copy.ts';
 
 interface Props {
   lang: 'en' | 'fr';
@@ -18,10 +19,10 @@ const changelogPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/blog' : '/blog';
       <img src={lightLogo} alt="Klui" width="72" height="24" />
     </a>
     <nav class="nav-links" aria-label="Main">
-      <a href={docsPath}>Docs</a>
-      <a href={changelogPath}>Changelog</a>
-      <a href={LINKS.github} rel="noopener">GitHub</a>
-      <a href={docsPath} class="nav-deploy">Deploy</a>
+      <a href={docsPath}>{NAV[lang].docs}</a>
+      <a href={changelogPath}>{NAV[lang].changelog}</a>
+      <a href={LINKS.github} rel="noopener">{NAV[lang].github}</a>
+      <a href={docsPath} class="nav-deploy">{NAV[lang].deploy}</a>
     </nav>
     <button class="nav-menu" type="button" aria-expanded="false" aria-controls="nav-sheet" aria-label="Menu">
       <span class="nav-menu-lines" aria-hidden="true"></span>
@@ -29,18 +30,18 @@ const changelogPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/blog' : '/blog';
   </div>
   <div class="nav-sheet" id="nav-sheet" hidden>
     <nav aria-label="Mobile">
-      <a href={docsPath}>Docs</a>
-      <a href={changelogPath}>Changelog</a>
-      <a href={LINKS.github} rel="noopener">GitHub</a>
-      <a href={docsPath} class="nav-deploy">Deploy</a>
+      <a href={docsPath}>{NAV[lang].docs}</a>
+      <a href={changelogPath}>{NAV[lang].changelog}</a>
+      <a href={LINKS.github} rel="noopener">{NAV[lang].github}</a>
+      <a href={docsPath} class="nav-deploy">{NAV[lang].deploy}</a>
     </nav>
   </div>
   <noscript>
     <nav class="nav-links" aria-label="Main (no JavaScript)">
-      <a href={docsPath}>Docs</a>
-      <a href={changelogPath}>Changelog</a>
-      <a href={LINKS.github} rel="noopener">GitHub</a>
-      <a href={docsPath} class="nav-deploy">Deploy</a>
+      <a href={docsPath}>{NAV[lang].docs}</a>
+      <a href={changelogPath}>{NAV[lang].changelog}</a>
+      <a href={LINKS.github} rel="noopener">{NAV[lang].github}</a>
+      <a href={docsPath} class="nav-deploy">{NAV[lang].deploy}</a>
     </nav>
   </noscript>
 </header>

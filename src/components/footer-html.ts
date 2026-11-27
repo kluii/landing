@@ -2,6 +2,7 @@
 // The footer markup lives in one .ts module so both the site Footer and the Starlight
 // Footer override render the same bytes (Starlight overrides cannot bundle .astro imports).
 import { LINKS, HAS_FR_ROUTES } from '../data/links.ts';
+import { FOOTER } from '../data/copy.ts';
 import { CLAIMS } from '../data/claims.ts';
 import pkg from '../../package.json';
 
@@ -39,11 +40,11 @@ export function footerHtml(lightLogo: string, lang: 'en' | 'fr'): string {
       <p class="footer-desc">A self-hosted kanban for projects that end.</p>
     </div>
     <nav class="footer-links" aria-label="Footer">
-      <a href="${docsPath}">Docs</a>
-      <a href="${changelogPath}">Changelog</a>
-      <a href="${LINKS.github}" rel="noopener">GitHub</a>
-      <a href="${LINKS.licence}" rel="noopener">Licence</a>
-      <a href="${privacyPath}">Privacy</a>
+      <a href="${docsPath}">${FOOTER[lang].docs}</a>
+      <a href="${changelogPath}">${FOOTER[lang].changelog}</a>
+      <a href="${LINKS.github}" rel="noopener">${FOOTER[lang].github}</a>
+      <a href="${LINKS.licence}" rel="noopener">${FOOTER[lang].licence}</a>
+      <a href="${privacyPath}">${FOOTER[lang].privacy}</a>
     </nav>
     <div class="footer-meta">
       <p class="mono-line">Klui ${esc(CLAIMS.appVersion.value)} · site ${esc(pkg.version)}</p>

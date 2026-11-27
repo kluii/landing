@@ -203,6 +203,34 @@ export const BLOG: Record<Lang, BlogCopy> = {
   },
 };
 
+export const NAV: Record<
+  Lang,
+  { docs: string; changelog: string; github: string; deploy: string }
+> = {
+  en: { docs: 'Docs', changelog: 'Changelog', github: 'GitHub', deploy: 'Deploy' },
+  fr: { docs: 'Docs', changelog: 'Journal', github: 'GitHub', deploy: 'Déployer' },
+};
+
+export const FOOTER: Record<
+  Lang,
+  { docs: string; changelog: string; github: string; licence: string; privacy: string }
+> = {
+  en: {
+    docs: 'Docs',
+    changelog: 'Changelog',
+    github: 'GitHub',
+    licence: 'Licence',
+    privacy: 'Privacy',
+  },
+  fr: {
+    docs: 'Docs',
+    changelog: 'Journal',
+    github: 'GitHub',
+    licence: 'Licence',
+    privacy: 'Confidentialité',
+  },
+};
+
 const TOKENS: Record<string, string> = {
   appVersion: '',
   tools: '',
