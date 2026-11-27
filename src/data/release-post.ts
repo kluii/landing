@@ -11,7 +11,11 @@ interface PostLike {
   };
 }
 
-export function pickReleasePost<T extends PostLike>(posts: T[], lang: string, version: string): T | null {
+export function pickReleasePost<T extends PostLike>(
+  posts: T[],
+  lang: string,
+  version: string,
+): T | null {
   for (const p of posts) {
     if (p.data.draft) continue;
     if (p.data.lang !== lang) continue;

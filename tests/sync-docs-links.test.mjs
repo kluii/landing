@@ -27,10 +27,14 @@ test('an anchored link to an unknown file still fails', () => {
   // fail() calls process.exit(1), so the negative case runs in a subprocess.
   const code = spawnSync(
     process.execPath,
-    ['--input-type=module', '-e', `
+    [
+      '--input-type=module',
+      '-e',
+      `
       import { rewriteLinks } from ${JSON.stringify(join(ROOT, 'scripts', 'sync-docs.mjs'))};
       rewriteLinks('[z](../missing.md#x)', 'features/two.md', new Set(['api.md']), 'v2');
-    `],
+    `,
+    ],
     { encoding: 'utf8' },
   );
   assert.notEqual(code.status, 0);

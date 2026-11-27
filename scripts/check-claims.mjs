@@ -65,7 +65,13 @@ for (const [key, claim] of Object.entries(CLAIMS)) {
       if (n === undefined || n !== claim.value)
         failures.push(`installMinutes: claim ${claim.value} != install-time.txt ${raw.trim()}`);
     }
-    if (key === 'installInstance' && !raw.split('\n').map((l) => l.trim()).includes(claim.value)) {
+    if (
+      key === 'installInstance' &&
+      !raw
+        .split('\n')
+        .map((l) => l.trim())
+        .includes(claim.value)
+    ) {
       failures.push(`installInstance: claim ${claim.value} != install-time.txt ${raw.trim()}`);
     }
   }
