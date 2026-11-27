@@ -98,7 +98,10 @@ for (const key of Object.keys(CLAIMS)) {
 // Rendered numbers: the tool count printed in HTML must equal the manifest.
 const DIST = process.env.CHECK_CLAIMS_DIST ?? join(ROOT, 'dist');
 if (existsSync(DIST)) {
-  for (const file of walk(DIST).filter((p) => p.endsWith('.html'))) {
+  const pages = walk(DIST, /\.html$/).filter((p) => p.endsWith('.html'));
+  if (pages.length === 0)
+    failures.push('dist: no built HTML pages found (walk returned nothing) — cannot verify claims');
+  for (const file of pages) {
     const html = readFileSync(file, 'utf8');
     for (const m of html.matchAll(/(\d+)\s+MCP tools/g)) {
       if (Number(m[1]) !== CLAIMS.tools.value) {
