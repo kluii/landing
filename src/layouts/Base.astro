@@ -6,6 +6,8 @@ import '../styles/fonts.css';
 import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
 import { LINKS } from '../data/links.ts';
+import { siteJsonLd } from '../data/structured.ts';
+import { ogNameFor, routeToRel } from '../data/og.ts';
 
 interface Props {
   title: string;
@@ -32,7 +34,7 @@ const {
 } = Astro.props;
 
 const canonical = `${LINKS.site}${path}`;
-const ogImg = ogImage ?? `${LINKS.site}/og${path === '/' ? '/home' : path}.png`;
+const ogImg = ogImage ?? `${LINKS.site}/og/${ogNameFor(routeToRel(path))}`;
 const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
 ---
 
@@ -64,6 +66,7 @@ const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImg} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script type="application/ld+json" set:html={JSON.stringify(siteJsonLd())} />
     <link
       rel="preload"
       href="/fonts/newsreader-var-latin.woff2"

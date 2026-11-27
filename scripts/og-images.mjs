@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Build-time OG images (docs/seo.md §3): one SVG template rendered to 1200x630 PNG per
 // built page via @resvg/resvg-js. Geometry is asserted by tests/og.test.mjs.
+import { ogNameFor } from '../src/data/og.ts';
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -128,10 +129,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1] && exi
     const rel = file.slice(DIST.length + 1).replace(/\.html$/, '');
     const { title, section } = pageInfo(readFileSync(file, 'utf8'));
     const png = renderPng(svgTemplate({ title, section }));
-    const name =
-      rel === 'index' || rel === '404'
-        ? `${rel === '404' ? '404' : 'home'}.png`
-        : `${rel.replace(/\//g, '-')}.png`;
+    const name = ogNameFor(rel);
     writeFileSync(join(outDir, name), png);
     count += 1;
   }

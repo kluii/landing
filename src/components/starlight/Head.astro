@@ -1,0 +1,22 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// Starlight Head override (L4-02): adds the site JSON-LD on every docs page and a
+// BreadcrumbList built from the route path plus the page's entry title.
+import Default from '@astrojs/starlight/components/Head.astro';
+import { siteJsonLd, breadcrumbJsonLd } from '../../data/structured.ts';
+import { ogNameFor, routeToRel } from '../../data/og.ts';
+import { LINKS } from '../../data/links.ts';
+
+const pathname = Astro.url.pathname;
+const entry = Astro.locals.starlightRoute?.entry;
+const crumbs =
+  pathname.startsWith('/docs/') && entry
+    ? breadcrumbJsonLd(pathname, entry.data.title)
+    : null;
+---
+
+<Default {...Astro.props} />
+<meta property="og:image" content={`${LINKS.site}/og/${ogNameFor(routeToRel(Astro.url.pathname))}`} />
+<meta name="twitter:image" content={`${LINKS.site}/og/${ogNameFor(routeToRel(Astro.url.pathname))}`} />
+<script type="application/ld+json" set:html={JSON.stringify(siteJsonLd())}></script>
+{crumbs && <script type="application/ld+json" set:html={JSON.stringify(crumbs)}></script>}

@@ -22,6 +22,31 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/404'),
+      serialize: (item) => {
+        const p = new URL(item.url).pathname;
+        let priority = 0.5;
+        let changefreq = 'monthly';
+        if (p === '/') {
+          priority = 1;
+          changefreq = 'weekly';
+        } else if (p.startsWith('/docs/v2')) {
+          priority = 0.8;
+          changefreq = 'weekly';
+        } else if (p.startsWith('/docs/v1')) {
+          priority = 0.2;
+          changefreq = 'yearly';
+        } else if (p === '/blog' || p.startsWith('/blog/')) {
+          priority = 0.7;
+          changefreq = 'weekly';
+        } else if (p.startsWith('/fr')) {
+          priority = 0.6;
+          changefreq = 'weekly';
+        } else if (p.startsWith('/legal')) {
+          priority = 0.2;
+          changefreq = 'yearly';
+        }
+        return { ...item, priority, changefreq };
+      },
     }),
     starlight({
       title: 'Klui',
@@ -38,12 +63,13 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
       components: {
         Banner: './src/components/starlight/Banner.astro',
+        Head: './src/components/starlight/Head.astro',
         Footer: './src/components/starlight/Footer.astro',
         Sidebar: './src/components/starlight/Sidebar.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',
       },
       head: [
-        { tag: 'meta', attrs: { property: 'og:image', content: `${site}/og/home.png` } },
+        // og:image is per-page, emitted by the Head override (L4-01: unique per page)
         { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
       ],
     }),
