@@ -1,6 +1,11 @@
 /* SPDX-License-Identifier: AGPL-3.0-only */
 /* The only file that may contain --sl-color-* overrides (DESIGN.md §12). No purple anywhere. */
 
+/* Starlight routes do not go through Base.astro, so the design tokens must be pulled in
+   here: without them every --sl-color-* below resolves to nothing and the docs render
+   colourless (white page, black text, invisible light wordmark). */
+@import './tokens.css';
+
 /* Dark-only (ADR-0002). The --sl-color-* block is deliberately UNLAYERED: Starlight
    declares its own theme variables in @layer starlight.base, and a later-declared
    layer beats any earlier layer regardless of specificity, so a layered override here
