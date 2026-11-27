@@ -9,7 +9,9 @@ import { fileURLToPath } from 'node:url';
 import { CLAIMS } from '../src/data/claims.ts';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
-const GEN = join(ROOT, 'src', 'generated');
+// Env-overridable so tests can point the gate at a fixture (L4-07: a bumped
+// tools.json must fail with the claim named).
+const GEN = process.env.CHECK_CLAIMS_GEN ?? join(ROOT, 'src', 'generated');
 const PRODUCTION = process.env.NODE_ENV === 'production';
 const failures = [];
 const pending = [];
@@ -84,7 +86,7 @@ for (const key of Object.keys(CLAIMS)) {
 }
 
 // Rendered numbers: the tool count printed in HTML must equal the manifest.
-const DIST = join(ROOT, 'dist');
+const DIST = process.env.CHECK_CLAIMS_DIST ?? join(ROOT, 'dist');
 if (existsSync(DIST)) {
   for (const file of walk(DIST).filter((p) => p.endsWith('.html'))) {
     const html = readFileSync(file, 'utf8');
