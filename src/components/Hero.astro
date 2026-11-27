@@ -12,6 +12,7 @@ import GlyphGrid from './GlyphGrid.astro';
 import { CLAIMS } from '../data/claims.ts';
 import { INSTALL_COMMANDS } from '../data/snippets.ts';
 import { LINKS } from '../data/links.ts';
+import { pickReleasePost } from '../data/release-post.ts';
 import { LANDING, NAV, fill } from '../data/copy.ts';
 import type { Lang, Variant } from '../data/copy.ts';
 import pkg from '../../package.json';
@@ -28,9 +29,7 @@ const copy = LANDING[lang][variant];
 // when it exists, otherwise to the changelog index — never to a dead post URL.
 type Post = CollectionEntry<'blog'>;
 const posts = (await getCollection('blog')) as Post[];
-const release = posts.find(
-  (p: Post) => !p.data.draft && p.data.version === CLAIMS.appVersion.value,
-);
+const release = pickReleasePost(posts, lang, CLAIMS.appVersion.value);
 const blogBase = lang === 'fr' ? '/fr/blog' : '/blog';
 const pillHref = release ? `${blogBase}/${release.data.version.replace(/\./g, '-')}` : blogBase;
 const demoUrl = LINKS.demo;
