@@ -395,6 +395,19 @@ export const FOOTER: Record<
     privacy: string;
     cloud: string;
     selfhosted: string;
+    // The close: one sentence in the display face, the argument the page ends on.
+    close: string;
+    colProduct: string;
+    colDocs: string;
+    colProject: string;
+    quickstart: string;
+    limits: string;
+    faq: string;
+    mcp: string;
+    deployment: string;
+    actionCloud: string;
+    actionSelfhosted: string;
+    actionCloudFallback: string;
   }
 > = {
   en: {
@@ -405,6 +418,18 @@ export const FOOTER: Record<
     privacy: 'Privacy',
     cloud: 'Cloud',
     selfhosted: 'Self-hosted',
+    close: 'Projects end. The board becomes the record.',
+    colProduct: 'Klui',
+    colDocs: 'Docs',
+    colProject: 'Project',
+    quickstart: 'Quickstart',
+    limits: 'Limits',
+    faq: 'FAQ',
+    mcp: 'MCP reference',
+    deployment: 'Deployment',
+    actionCloud: 'Open Klui Cloud',
+    actionSelfhosted: 'Read the quickstart',
+    actionCloudFallback: 'Install it yourself',
   },
   fr: {
     docs: 'Docs',
@@ -414,6 +439,18 @@ export const FOOTER: Record<
     privacy: 'Confidentialité',
     cloud: 'Cloud',
     selfhosted: 'Auto-hébergé',
+    close: 'Le projet se termine. Le tableau devient l’archive.',
+    colProduct: 'Klui',
+    colDocs: 'Documentation',
+    colProject: 'Projet',
+    quickstart: 'Démarrage rapide',
+    limits: 'Limites',
+    faq: 'FAQ',
+    mcp: 'Référence MCP',
+    deployment: 'Déploiement',
+    actionCloud: 'Ouvrir Klui Cloud',
+    actionSelfhosted: 'Lire le démarrage rapide',
+    actionCloudFallback: 'L’installer soi-même',
   },
 };
 

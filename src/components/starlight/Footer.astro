@@ -8,4 +8,4 @@ import lightLogo from '../../../assets/light-logo.png?url';
 import { footerHtml } from '../footer-html.ts';
 ---
 
-<Fragment set:html={footerHtml(lightLogo, Astro.props.lang === 'fr' ? 'fr' : 'en')} />
+<Fragment set:html={footerHtml(lightLogo, Astro.props.lang === 'fr' ? 'fr' : 'en', undefined, { compact: true })} />
