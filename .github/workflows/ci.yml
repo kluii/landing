@@ -69,14 +69,14 @@ jobs:
       - name: Wait for the preview
         run: |
           for i in $(seq 1 30); do
-            if node -e "fetch('http://localhost:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then exit 0; fi
+            if node -e "fetch('http://127.0.0.1:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then exit 0; fi
             sleep 1
           done
           exit 1
 
       - name: Lighthouse (desktop preset, cold cache)
         run: |
-          npx lighthouse http://localhost:4321 --preset=desktop \
+          npx lighthouse http://127.0.0.1:4321 --preset=desktop \
             --chrome-flags="--headless --no-sandbox" \
             --output=json --output-path=./lh.json --save-assets --quiet
 

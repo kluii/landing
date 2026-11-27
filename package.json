@@ -12,7 +12,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "postbuild": "node scripts/write-headers.mjs && node scripts/og-images.mjs && node scripts/emit-md-twins.mjs && node scripts/patch-docs-chrome.mjs",
-    "preview": "astro preview",
+    "preview": "astro preview --host 127.0.0.1 --port 4321",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "astro check",
