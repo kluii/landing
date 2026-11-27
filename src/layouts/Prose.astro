@@ -12,9 +12,11 @@ interface Props {
   lang: 'en' | 'fr';
   frPath?: string | undefined;
   enPath?: string | undefined;
+  /** True when the rendered markdown body starts with its own H1 (then no second h1 here). */
+  contentHasH1?: boolean | undefined;
 }
 
-const { title, description, path, lang, frPath, enPath } = Astro.props;
+const { title, description, path, lang, frPath, enPath, contentHasH1 = false } = Astro.props;
 ---
 
 <Base
@@ -28,7 +30,7 @@ const { title, description, path, lang, frPath, enPath } = Astro.props;
 >
   <Nav lang={lang} />
   <main id="main" class="prose-page">
-    <h1 class="prose-title">{title}</h1>
+    {!contentHasH1 && <h1 class="prose-title">{title}</h1>}
     <div class="prose-body">
       <slot />
     </div>

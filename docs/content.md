@@ -22,8 +22,12 @@ These strings are fixed. Changing one is a decision recorded in this file with t
 
 **Announcement pill:** `v{appVersion} — close-out summaries, {tools} MCP tools` — links to the shipped release note for that version. Only a released fact, never a teaser.
 
-**H1 (hero):**
+**H1 (hero, /selfhosted):**
 `A kanban for projects that end.`
+
+The cloud variant (`/`, ADR-0015) carries its own H1 (`A kanban for projects that end — we run it.`)
+and lead in `src/data/copy.ts` under `LANDING[lang].cloud`; the strings above stay locked on
+`/selfhosted`, byte-identical.
 
 **Lead:**
 `Klui is a fast, self-hosted board where a link is the invite, agents read and write through MCP, and every project closes with a summary you can hand over.`
@@ -44,7 +48,11 @@ These strings are fixed. Changing one is a decision recorded in this file with t
 
 **Spec line under the actions (mono):** `v{siteVersion} · AGPL-3.0 · self-hosted · {tools} MCP tools`
 
-**Plate caption:** `Plate 1 — a board from the pilot, five cards, one finished.`
+**Plate caption:** `Plate 1 — the app itself, captured at 1600×1000 and 390×844.`
+(Changed in L5 / ADR-0015 with the reason recorded here, per §2: the DOM board mock was
+replaced by the real capture slot `AppShot.astro`, so the caption no longer describes a
+mock — it names the capture dimensions. FR twin: `Planche 1 — l’application elle-même,
+capturée en 1600×1000 et 390×844.`)
 
 Every value in braces comes from `claims.ts` or `package.json`.
 

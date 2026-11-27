@@ -1,0 +1,145 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The close-out section — self-hosted variant only. The rendered summary is the example
+// from the app's docs/features/close-out.md §2 (src/data/mock.ts).
+import Section from './Section.astro';
+import ArrowLink from './ArrowLink.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { CLOSE_OUT } from '../data/mock.ts';
+import { LANDING, fill } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+const t = (s: string) => fill(s, { tools: CLAIMS.tools.value });
+---
+
+<Section title={copy.endTitle}>
+  <div class="end-grid">
+    <p class="end-copy" set:html={t(copy.endCopy ?? '')} />
+    <div class="closeout reveal">
+      <p class="closeout-title">{CLOSE_OUT.title}</p>
+      <p class="closeout-outcome mono">{CLOSE_OUT.outcome}</p>
+      <div class="closeout-cols">
+        <div>
+          <h3 class="closeout-h">Done</h3>
+          <ul>
+            {CLOSE_OUT.done.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div>
+          <h3 class="closeout-h">Remaining</h3>
+          <ul>
+            {CLOSE_OUT.remaining.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div>
+          <h3 class="closeout-h">People</h3>
+          <p class="mono closeout-people">{CLOSE_OUT.people}</p>
+        </div>
+      </div>
+      <pre class="closeout-rhythm" aria-label="Events per week, as bars">{CLOSE_OUT.rhythm}</pre>
+    </div>
+    {copy.closeoutHref && <ArrowLink href={copy.closeoutHref}>{copy.closeoutLink}</ArrowLink>}
+  </div>
+</Section>
+
+<style>
+  .end-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .end-copy {
+    color: var(--ink-muted);
+    max-width: 46ch;
+    min-width: 0;
+  }
+
+  .end-copy code {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inline);
+    padding: 0 5px;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .closeout {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    padding: 20px;
+    min-width: 0;
+  }
+
+  .closeout-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--tracking-h2);
+  }
+
+  .closeout-outcome {
+    margin-top: 8px;
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    color: var(--ink-muted);
+  }
+
+  .closeout-cols {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .closeout-h {
+    font-size: var(--text-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--tracking-label);
+    color: var(--ink-subtle);
+  }
+
+  .closeout-cols ul {
+    margin-top: 8px;
+    padding-left: 16px;
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+
+  .closeout-cols li + li {
+    margin-top: 4px;
+  }
+
+  .closeout-people {
+    margin-top: 8px;
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-muted);
+  }
+
+  .closeout-rhythm {
+    margin-top: 16px;
+    overflow-x: auto;
+    font-size: var(--text-mono);
+    line-height: var(--lh-mono);
+    color: var(--ink);
+  }
+
+  @media (max-width: 1023px) {
+    .end-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .closeout-cols {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

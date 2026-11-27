@@ -1,0 +1,58 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The agents / MCP section — self-hosted variant only.
+import Section from './Section.astro';
+import CodeBlock from './CodeBlock.astro';
+import ArrowLink from './ArrowLink.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { MCP_CONFIG } from '../data/snippets.ts';
+import { LANDING, fill } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+const t = (s: string) => fill(s, { tools: CLAIMS.tools.value });
+---
+
+<Section title={copy.agentsTitle}>
+  <div class="agents-grid">
+    <div class="agents-copy">
+      <p set:html={t(copy.agentsCopy ?? '')} />
+      <div class="agents-links">
+        {copy.agentsLinkA && <ArrowLink href="/docs/v2/mcp">{copy.agentsLinkA}</ArrowLink>}
+        {copy.agentsLinkB && (
+          <ArrowLink href="/docs/v2/features/agents">{copy.agentsLinkB}</ArrowLink>
+        )}
+      </div>
+    </div>
+    <CodeBlock code={MCP_CONFIG} lang="json" copyLabel={copy.copyConfig} />
+  </div>
+  <p class="section-footnote mono" set:html={t(copy.agentsFootnote ?? '')} />
+</Section>
+
+<style>
+  .agents-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .agents-copy {
+    min-width: 0;
+  }
+
+  .agents-links {
+    margin-top: 24px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 1023px) {
+    .agents-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

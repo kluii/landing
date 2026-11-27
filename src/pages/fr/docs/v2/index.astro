@@ -8,6 +8,7 @@ import Prose from '../../../../layouts/Prose.astro';
 const all = (await getCollection('docsFr')) as CollectionEntry<'docsFr'>[];
 const entry = all.find((p: CollectionEntry<'docsFr'>) => p.id === 'index')!;
 const { Content } = await render(entry);
+const contentHasH1 = /^#\s/m.test(entry.body.replace(/^```[\s\S]*?^```/gm, ''));
 ---
 
 <Prose
@@ -16,6 +17,7 @@ const { Content } = await render(entry);
   path="/fr/docs/v2"
   lang="fr"
   enPath="/docs/v2"
+  contentHasH1={contentHasH1}
 >
   <Content />
 </Prose>

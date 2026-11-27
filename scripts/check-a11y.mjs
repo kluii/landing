@@ -76,6 +76,13 @@ for (const file of files) {
     console.error(`axe-static: ${rel}: no skip link to #main`);
     violations += 1;
   }
+  // L5: exactly one h1 per page (the docs fix hides Starlight's title when the synced
+  // markdown carries its own H1 — a double h1 on /docs/v2/ shipped in L4).
+  const h1Count = (html.match(/<h1[\s>]/g) ?? []).length;
+  if (h1Count !== 1) {
+    console.error(`axe-static: ${rel}: ${h1Count} h1 elements (expected exactly 1)`);
+    violations += 1;
+  }
 }
 if (!/prefers-reduced-motion/.test(cssText)) {
   console.error('axe-static: no prefers-reduced-motion rule in built CSS');

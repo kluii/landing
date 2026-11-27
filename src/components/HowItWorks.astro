@@ -1,0 +1,56 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// "How it works" in three steps — cloud variant only.
+import Section from './Section.astro';
+import { LANDING } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+---
+
+<Section title={copy.howTitle}>
+  <ol class="how-steps">
+    {
+      (copy.howSteps ?? []).map((step, i) => (
+        <li class="how-step">
+          <span class="how-num mono" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <p>{step}</p>
+        </li>
+      ))
+    }
+  </ol>
+</Section>
+
+<style>
+  .how-steps {
+    margin-top: 32px;
+    list-style: none;
+    max-width: 60ch;
+  }
+
+  .how-step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 16px;
+    align-items: baseline;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .how-step:first-child {
+    border-top: none;
+  }
+
+  .how-num {
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+    color: var(--ink-subtle);
+  }
+
+  .how-step p {
+    color: var(--ink-muted);
+  }
+</style>

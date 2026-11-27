@@ -8,6 +8,7 @@ import Analytics from '../components/Analytics.astro';
 import { LINKS } from '../data/links.ts';
 import { siteJsonLd } from '../data/structured.ts';
 import { ogNameFor, routeToRel } from '../data/og.ts';
+import type { Variant } from '../data/copy.ts';
 
 interface Props {
   title: string;
@@ -19,6 +20,7 @@ interface Props {
   noindex?: boolean;
   frPath?: string | undefined;
   enPath?: string | undefined;
+  variant?: Variant;
 }
 
 const {
@@ -31,6 +33,7 @@ const {
   noindex = false,
   frPath,
   enPath,
+  variant,
 } = Astro.props;
 
 const canonical = `${LINKS.site}${path}`;
@@ -108,7 +111,7 @@ const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
-    <Footer path={path} lang={lang} />
+    <Footer path={path} lang={lang} variant={variant} />
     <Analytics />
   </body>
 </html>

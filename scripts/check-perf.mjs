@@ -23,32 +23,42 @@ function transferred(path) {
   return gzipSync(readFileSync(path)).length;
 }
 
-const home = join(DIST, 'index.html');
-const html = readFileSync(home, 'utf8');
-
-let js = 0;
-let jsFiles = 0;
-for (const m of html.matchAll(/<script[^>]+src="([^"]+)"/g)) {
-  const p = join(DIST, m[1].replace(/^\//, ''));
-  if (existsSync(p)) {
-    js += transferred(p);
-    jsFiles += 1;
+// Both landing routes carry the budget: / (cloud) and /selfhosted (ADR-0015).
+const landingPages = ['index.html', 'selfhosted/index.html'];
+const budgets = {};
+for (const rel of landingPages) {
+  const page = join(DIST, rel);
+  if (!existsSync(page)) {
+    console.error(`check-perf: dist/${rel} missing — run npm run build first`);
+    process.exit(1);
   }
-}
-// Inline module scripts count too: the budget is transferred JS, not just files.
-for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
-  const body = m[1].trim();
-  if (body !== '') js += gzipSync(Buffer.from(body)).length;
-}
+  const html = readFileSync(page, 'utf8');
 
-let css = 0;
-let cssFiles = 0;
-for (const m of html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)) {
-  const p = join(DIST, m[1].replace(/^\//, ''));
-  if (existsSync(p)) {
-    css += transferred(p);
-    cssFiles += 1;
+  let js = 0;
+  let jsFiles = 0;
+  for (const m of html.matchAll(/<script[^>]+src="([^"]+)"/g)) {
+    const p = join(DIST, m[1].replace(/^\//, ''));
+    if (existsSync(p)) {
+      js += transferred(p);
+      jsFiles += 1;
+    }
   }
+  // Inline module scripts count too: the budget is transferred JS, not just files.
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+    const body = m[1].trim();
+    if (body !== '') js += gzipSync(Buffer.from(body)).length;
+  }
+
+  let css = 0;
+  let cssFiles = 0;
+  for (const m of html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)) {
+    const p = join(DIST, m[1].replace(/^\//, ''));
+    if (existsSync(p)) {
+      css += transferred(p);
+      cssFiles += 1;
+    }
+  }
+  budgets[rel] = { js, jsFiles, css, cssFiles };
 }
 
 let fonts = 0;
@@ -58,13 +68,18 @@ if (existsSync(fontsDir)) {
 }
 
 const failures = [];
-if (js > JS_BUDGET) failures.push(`landing JS ${js} B > ${JS_BUDGET} B budget`);
-if (css > CSS_BUDGET) failures.push(`landing CSS ${css} B > ${CSS_BUDGET} B budget`);
+for (const [rel, b] of Object.entries(budgets)) {
+  if (b.js > JS_BUDGET) failures.push(`${rel}: landing JS ${b.js} B > ${JS_BUDGET} B budget`);
+  if (b.css > CSS_BUDGET) failures.push(`${rel}: landing CSS ${b.css} B > ${CSS_BUDGET} B budget`);
+}
 if (fonts > FONT_BUDGET) failures.push(`font payload ${fonts} B > ${FONT_BUDGET} B budget`);
 
-console.log(
-  `check-perf: landing JS ${js} B transferred (${jsFiles} external files + inline, budget ${JS_BUDGET}) · CSS ${css} B (${cssFiles} files, budget ${CSS_BUDGET}) · fonts ${fonts} B (budget ${FONT_BUDGET})`,
-);
+for (const [rel, b] of Object.entries(budgets)) {
+  console.log(
+    `check-perf: /${rel === 'index.html' ? '' : rel.replace('/index.html', '')} JS ${b.js} B transferred (${b.jsFiles} external files + inline, budget ${JS_BUDGET}) · CSS ${b.css} B (${b.cssFiles} files, budget ${CSS_BUDGET})`,
+  );
+}
+console.log(`check-perf: fonts ${fonts} B (budget ${FONT_BUDGET})`);
 if (failures.length > 0) {
   for (const f of failures) console.error(`check-perf: FAIL ${f}`);
   process.exit(1);

@@ -1,0 +1,43 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The limits block — mandatory on both landing variants (S-18), versioned in claims.ts.
+import Section from './Section.astro';
+import { CLAIMS } from '../data/claims.ts';
+import { LANDING } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+---
+
+<Section title={copy.limitsTitle}>
+  <ul class="limits-list">
+    {CLAIMS.limits.value.map((limit) => <li class="limit-row">{limit}</li>)}
+  </ul>
+  <p class="limits-close">{copy.limitsClose}</p>
+</Section>
+
+<style>
+  .limits-list {
+    margin-top: 8px;
+    list-style: none;
+    max-width: 60ch;
+  }
+
+  .limit-row {
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+  }
+
+  .limit-row:first-child {
+    border-top: none;
+  }
+
+  .limits-close {
+    margin-top: 24px;
+    color: var(--ink-muted);
+  }
+</style>

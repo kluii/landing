@@ -1,0 +1,172 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The closing CTA — both variants. cloud: link to PUBLIC_CLOUD_URL (disabled when unset
+// in dev) + link to the self-hosted landing. selfhosted: copy button + cloud link.
+import CopyButton from './CopyButton.astro';
+import { INSTALL_COMMANDS } from '../data/snippets.ts';
+import { LINKS } from '../data/links.ts';
+import { LANDING, NAV } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+const cloudUrl = LINKS.cloud;
+---
+
+<section class="final-cta reveal">
+  <h2 class="final-title">{copy.finalTitle}</h2>
+  <div class="final-copy">
+    {
+      variant === 'cloud' ? (
+        cloudUrl !== '' ? (
+          <a class="btn-primary" href={cloudUrl} rel="noopener">
+            {copy.finalPrimary}
+            <span class="arrow" aria-hidden="true"> →</span>
+          </a>
+        ) : (
+          <button
+            class="btn-primary"
+            type="button"
+            disabled
+            aria-disabled="true"
+            data-cloud-unconfigured
+          >
+            {NAV[lang].cloudUnconfigured}
+          </button>
+        )
+      ) : (
+        <CopyButton text={INSTALL_COMMANDS} label={copy.heroCopy} />
+      )
+    }
+    <a class="btn-ghost" href={copy.finalSecondaryHref}>
+      {copy.finalSecondary}
+      <span class="arrow" aria-hidden="true"> →</span>
+    </a>
+  </div>
+  <p class="final-note">{copy.finalNote}</p>
+</section>
+
+<style>
+  .final-cta {
+    border-top: 1px solid var(--border);
+    padding: var(--section-pad-lg) 24px;
+    text-align: center;
+  }
+
+  .final-title {
+    font-size: var(--text-display-sm);
+    line-height: var(--lh-display-sm);
+    letter-spacing: var(--tracking-h1);
+  }
+
+  .final-copy {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .btn-primary .arrow {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .final-copy :global(.copy-btn) {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    cursor: pointer;
+  }
+
+  html.js .final-copy :global(.copy-btn) {
+    display: inline-flex;
+  }
+
+  .final-copy :global(.copy-btn:hover) {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-decoration: none;
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--surface-2);
+  }
+
+  .btn-ghost .arrow {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    margin-left: 6px;
+  }
+
+  .final-note {
+    margin-top: 16px;
+    color: var(--ink-subtle);
+    font-size: var(--text-body-sm);
+    letter-spacing: var(--tracking-small);
+  }
+
+  @media (max-width: 767px) {
+    .final-copy {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn-primary,
+    .final-copy :global(.copy-btn),
+    .btn-ghost {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

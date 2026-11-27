@@ -3,7 +3,7 @@
 // Source-level rules that do not need a parser (npm run lint runs eslint + this):
 // SPDX header, no emoji, no hex outside tokens.css, letter-spacing only in tokens.css,
 // no external URL literals in components (they belong in src/data/links.ts).
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,12 +13,13 @@ const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/u
 const HEX = /#[0-9a-fA-F]{3,8}\b/;
 const URL_LITERAL = /https?:\/\/[^\s'"`)]+/;
 
-const SCAN_DIRS = ['src', 'scripts', 'tests'];
+const SCAN_DIRS = ['src', 'scripts', 'tests', 'e2e'];
 const EXT = /\.(astro|ts|mjs|css)$/;
 const failures = [];
 
 function walk(dir) {
   const out = [];
+  if (!existsSync(dir)) return out;
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
     if (statSync(p).isDirectory()) {

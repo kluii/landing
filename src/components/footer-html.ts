@@ -3,6 +3,8 @@
 // Footer override render the same bytes (Starlight overrides cannot bundle .astro imports).
 import { LINKS, HAS_FR_ROUTES } from '../data/links.ts';
 import { FOOTER } from '../data/copy.ts';
+import type { Lang, Variant } from '../data/copy.ts';
+import { VARIANT_ROUTES } from '../data/variants.ts';
 import { CLAIMS } from '../data/claims.ts';
 import pkg from '../../package.json';
 
@@ -26,11 +28,17 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-export function footerHtml(lightLogo: string, lang: 'en' | 'fr'): string {
+export function footerHtml(lightLogo: string, lang: Lang, variant?: Variant): string {
   const docsPath =
     lang === 'fr' && HAS_FR_ROUTES ? '/fr/docs/v2/quickstart' : '/docs/v2/quickstart';
   const changelogPath = lang === 'fr' && HAS_FR_ROUTES ? '/fr/blog' : '/blog';
   const privacyPath = lang === 'fr' ? '/legal/confidentialite' : '/legal/privacy';
+  // Landing links with the active state, only on the landing pages themselves (ADR-0015).
+  const landingLinks =
+    variant === undefined
+      ? ''
+      : `<a href="${VARIANT_ROUTES[lang].cloud}"${variant === 'cloud' ? ' aria-current="page"' : ''}>${FOOTER[lang].cloud}</a>
+      <a href="${VARIANT_ROUTES[lang].selfhosted}"${variant === 'selfhosted' ? ' aria-current="page"' : ''}>${FOOTER[lang].selfhosted}</a>`;
   return `
 <style>${CSS}</style>
 <footer class="site-footer">
@@ -40,6 +48,7 @@ export function footerHtml(lightLogo: string, lang: 'en' | 'fr'): string {
       <p class="footer-desc">A self-hosted kanban for projects that end.</p>
     </div>
     <nav class="footer-links" aria-label="Footer">
+      ${landingLinks}
       <a href="${docsPath}">${FOOTER[lang].docs}</a>
       <a href="${changelogPath}">${FOOTER[lang].changelog}</a>
       <a href="${LINKS.github}" rel="noopener">${FOOTER[lang].github}</a>

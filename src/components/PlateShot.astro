@@ -1,0 +1,15 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The plate section: the parchment mat holding the app screenshot slot (AppShot.astro).
+import Plate from './Plate.astro';
+import AppShot from './AppShot.astro';
+import { LANDING } from '../data/copy.ts';
+import type { SectionProps } from '../data/variants.ts';
+
+const { lang, variant } = Astro.props as SectionProps;
+const copy = LANDING[lang][variant];
+---
+
+<Plate caption={copy.plateCaption}>
+  <AppShot lang={lang} variant={variant} />
+</Plate>

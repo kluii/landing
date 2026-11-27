@@ -29,6 +29,9 @@ export default defineConfig({
         if (p === '/') {
           priority = 1;
           changefreq = 'weekly';
+        } else if (p === '/selfhosted') {
+          priority = 0.9;
+          changefreq = 'weekly';
         } else if (p.startsWith('/docs/v2')) {
           priority = 0.8;
           changefreq = 'weekly';
@@ -52,7 +55,8 @@ export default defineConfig({
       title: 'Klui',
       description:
         'Klui is a fast, self-hosted board where a link is the invite, agents read and write through MCP, and every project closes with a summary you can hand over.',
-      logo: { src: './assets/light-logo.png', alt: '' },
+      // No logo in the Starlight config: it overlapped the version switcher in the
+      // sidebar (L5). The wordmark stays in the site nav, the footer and the OG images.
       customCss: ['./src/styles/starlight.css', './src/styles/print.css'],
       social: [{ icon: 'github', label: 'GitHub', href: LINKS.github }],
       sidebar: [
@@ -67,6 +71,7 @@ export default defineConfig({
         Footer: './src/components/starlight/Footer.astro',
         Sidebar: './src/components/starlight/Sidebar.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',
+        PageTitle: './src/components/starlight/PageTitle.astro',
       },
       head: [
         // og:image is per-page, emitted by the Head override (L4-01: unique per page)

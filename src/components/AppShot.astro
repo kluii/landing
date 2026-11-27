@@ -1,0 +1,128 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-only
+// The app screenshot slot in the hero plate (ADR-0015 / S-37). Real captures go to
+// src/assets/app-desktop.png (1600x1000) and src/assets/app-mobile.png (390x844):
+// drop the files in, flip APP_SHOT_PLACEHOLDER to false, and nothing else changes
+// (docs/verify/l5.md). While the flag is true the classic placeholder frame renders
+// instead — the plate's inner surface and border, an 8 px radius, a stroke image glyph
+// and a mono caption — and a NODE_ENV=production content-lint fails on the
+// data-app-shot="placeholder" marker: a grey box must not reach production.
+import desktopShot from '../assets/app-desktop.png?url';
+import mobileShot from '../assets/app-mobile.png?url';
+import { LANDING } from '../data/copy.ts';
+import type { Lang, Variant } from '../data/copy.ts';
+
+export const APP_SHOT_PLACEHOLDER = true;
+export const APP_SHOT_BREAKPOINT = '(max-width: 639px)';
+export const APP_SHOT_DESKTOP = { width: 1600, height: 1000 } as const;
+export const APP_SHOT_MOBILE = { width: 390, height: 844 } as const;
+
+interface Props {
+  lang: Lang;
+  variant: Variant;
+}
+
+const { lang, variant } = Astro.props;
+const copy = LANDING[lang][variant];
+---
+
+{
+  APP_SHOT_PLACEHOLDER ? (
+    <div
+      class="app-shot app-shot-placeholder"
+      data-app-shot="placeholder"
+      role="img"
+      aria-label={copy.plateAlt}
+    >
+      <svg
+        class="app-shot-glyph"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="7" cy="8" r="1.6" stroke="currentColor" stroke-width="1.5" />
+        <path
+          d="M4 15l4.5-4.5 3 3L15 10l3 3"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <p class="app-shot-caption app-shot-caption-desktop mono">{copy.shotDesktop}</p>
+      <p class="app-shot-caption app-shot-caption-mobile mono">{copy.shotMobile}</p>
+    </div>
+  ) : (
+    <picture class="app-shot">
+      <source
+        media={APP_SHOT_BREAKPOINT}
+        srcset={mobileShot}
+        width={APP_SHOT_MOBILE.width}
+        height={APP_SHOT_MOBILE.height}
+      />
+      <img
+        class="app-shot-img"
+        src={desktopShot}
+        width={APP_SHOT_DESKTOP.width}
+        height={APP_SHOT_DESKTOP.height}
+        alt={copy.plateAlt}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+  )
+}
+
+<style>
+  .app-shot {
+    display: block;
+    width: 100%;
+  }
+
+  .app-shot-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-surface);
+  }
+
+  .app-shot-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    aspect-ratio: 1600 / 1000;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    color: var(--ink-subtle);
+  }
+
+  .app-shot-caption {
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono-sm);
+  }
+
+  .app-shot-caption-mobile {
+    display: none;
+  }
+
+  @media (max-width: 639px) {
+    .app-shot-placeholder {
+      aspect-ratio: 390 / 844;
+    }
+
+    .app-shot-caption-desktop {
+      display: none;
+    }
+
+    .app-shot-caption-mobile {
+      display: block;
+    }
+  }
+</style>

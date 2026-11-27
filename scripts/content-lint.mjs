@@ -65,6 +65,19 @@ export function hasTodoMarker(text) {
   return text.includes('TODO(');
 }
 
+// ADR-0015 / S-37: while no real app capture ships, AppShot.astro renders the classic
+// placeholder frame, marked with data-app-shot="placeholder". A grey box must not reach
+// a production build.
+export function hasAppShotPlaceholder(html) {
+  return html.includes('data-app-shot="placeholder"');
+}
+
+// ADR-0015 / S-36: the cloud CTA href comes only from PUBLIC_CLOUD_URL. Unset in dev the
+// button renders disabled with this marker; unset in a production build the gate fails.
+export function hasCloudUnconfigured(html) {
+  return html.includes('data-cloud-unconfigured');
+}
+
 // Footer rule: every built page carries the line, linking to wyliam.dev.
 export function hasFooter(html) {
   return html.includes('Made with &lt;3 by Wyliam') && html.includes('https://wyliam.dev');
@@ -100,6 +113,16 @@ export function lintText(label, text, failures) {
     for (const m of text.matchAll(/\{\{[A-Z_]+\}\}/g)) {
       failures.push(`${label}: legal placeholder survived a production build: ${m[0]}`);
     }
+  }
+  if (PRODUCTION && hasAppShotPlaceholder(text)) {
+    failures.push(
+      `${label}: app screenshot placeholder survived a production build (drop real captures into src/assets/app-*.png and flip APP_SHOT_PLACEHOLDER)`,
+    );
+  }
+  if (PRODUCTION && hasCloudUnconfigured(text)) {
+    failures.push(
+      `${label}: PUBLIC_CLOUD_URL is not set — the cloud CTA rendered disabled in a production build (.env.example)`,
+    );
   }
 }
 
@@ -186,12 +209,17 @@ function main() {
     }
   }
 
-  // The limits section is mandatory on the landing (L1-08) and cannot be softened away.
-  const home = join(DIST, 'index.html');
-  if (existsSync(home)) {
-    const html = readFileSync(home, 'utf8');
-    if (html.includes('Copy the install command') && !html.includes(LIMITS_HEADING)) {
-      failures.push(`index.html: mandatory limits section "${LIMITS_HEADING}" missing`);
+  // The limits section is mandatory on both EN landing routes (L1-08, ADR-0015) and
+  // cannot be softened away.
+  for (const rel of ['index.html', 'selfhosted/index.html']) {
+    const page = join(DIST, rel);
+    if (!existsSync(page)) {
+      failures.push(`${rel}: missing — the landing split must build both variants`);
+      continue;
+    }
+    const html = readFileSync(page, 'utf8');
+    if (!html.includes(LIMITS_HEADING)) {
+      failures.push(`${rel}: mandatory limits section "${LIMITS_HEADING}" missing`);
     }
   }
 

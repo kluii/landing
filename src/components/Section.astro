@@ -1,10 +1,10 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-only
 interface Props {
-  id?: string;
-  title?: string;
-  lead?: string;
-  footnote?: string;
+  id?: string | undefined;
+  title?: string | undefined;
+  lead?: string | undefined;
+  footnote?: string | undefined;
 }
 
 const { id, title, lead, footnote } = Astro.props;

@@ -1,6 +1,6 @@
 # The landing, section by section
 
-Implementation checklist for `/` and `/fr/`. Copy is locked in `docs/content.md` §2; visual rules in `DESIGN.md`. This file says what each section contains, what it must not contain, and how to check it.
+Implementation checklist for the two landing variants (ADR-0015): `/` + `/fr` sell Klui Cloud, `/selfhosted` + `/fr/selfhosted` sell self-hosting. `Landing.astro` renders one section registry per `variant`; copy is locked in `docs/content.md` §2 (self-hosted strings) and lives in `src/data/copy.ts` under `LANDING[lang][variant]`. Visual rules in `DESIGN.md`.
 
 The page is a broadsheet: a centred serif masthead, then left-aligned sections on a 12-column grid, with one paper plate carrying the product.
 
@@ -9,13 +9,16 @@ The page is a broadsheet: a centred serif masthead, then left-aligned sections o
 ## 1. Nav
 
 - Height 72 px, static on the landing, hairline bottom, transparent over the canvas.
-- Left: wordmark (`assets/light-logo.png`, 24 px, `alt="Klui"`).
-- Right: `Docs`, `Changelog`, `GitHub` in `label` (`13 px / 500 / +0.05em`), `--ink-muted`, hover `--ink`.
-- Far right: a **ghost pill** `Deploy` → `/docs/v2/quickstart` (44 px, 1 px `--border-strong`). No filled pill in the nav: the hero keeps the only paper button on the page.
-- Below 768 px: wordmark + a 40 px menu button; the sheet is a dialog with the same four items and a close control. Focus trapped, `Esc` closes, focus returns.
-- No active-tab underline on the landing (one page). Docs show the section in their own nav.
+- Left: wordmark (`assets/light-logo.png`, 24 px, `alt="Klui"`), linking to the variant's home.
+- Right, per variant (ADR-0015):
+  - cloud: `Self-hosted` → the other landing, `Changelog`, `GitHub`;
+  - self-hosted: `Docs`, `Cloud` → the other landing, `Self-hosted` (current, `aria-current="page"`), `Changelog`, `GitHub`.
+  - The link to the other landing is the point of the split: a real label, never a footnote.
+- Far right, the variant CTA (44 px ghost pill, 1 px `--border-strong`): cloud → `Open Klui Cloud` at `PUBLIC_CLOUD_URL` (unset in dev: disabled pill, `Cloud address not configured`, marked `data-cloud-unconfigured`; a production build fails on the marker); self-hosted → `Copy the install command` anchored to `#install`.
+- Below 768 px: wordmark + a 40 px menu button; the sheet is a dialog with the same items and a close control. Focus trapped, `Esc` closes, focus returns.
+- No active-tab underline on the landing. Docs show the section in their own nav.
 
-**Check:** keyboard-only reaches every item; the sheet does not scroll the page behind it; the ghost pill is 44 px on touch; the nav contains no filled control.
+**Check:** keyboard-only reaches every item; the sheet does not scroll the page behind it; the ghost pill is 44 px on touch; the nav contains no filled control; the cloud nav has no `/docs` link (e2e `landing-split.spec.ts`).
 
 ## 2. Hero (centred masthead)
 
@@ -31,7 +34,7 @@ The page is a broadsheet: a centred serif masthead, then left-aligned sections o
 - Announcement pill: `--surface-2`, 1 px `--border`, pill, 32 px, `mono-sm`, optional trailing `→`; it links to the **shipped** release note for that version. It never says "coming soon".
 - `h1`: `display` (Newsreader 400, `clamp(44px, 6.4vw, 76px)`, -0.025em), centred, `text-wrap: balance`, max 3 lines at 1440 px, max 4 at 390 px.
 - Lead: `lead` (18 px, +0.02em), `--ink-muted`, `max-width: 44ch`, centred. One sentence.
-- Actions: one paper pill (primary, copies the command) and one ghost pill (secondary, demo board). One row ≥ 640 px; stacked full width below. Both 44 px.
+- Actions, per variant: cloud = paper pill `Open Klui Cloud` (or the disabled unconfigured pill) + ghost `Prefer to self-host?`; self-hosted = paper pill (copies the command) + ghost `Prefer the cloud?` (+ the demo ghost only when `PUBLIC_DEMO_URL` is set). One row ≥ 640 px; stacked full width below. All 44 px.
 - Spec line: `mono-sm`, `--ink-subtle`, items separated by `·` with 8 px gaps, values from `claims.ts` and `package.json`.
 - Copy action: copies the single command from `snippets.ts`, flips the label to `Copied` for 2 s, announces via `aria-live="polite"`. No modal, no scroll, no toast library.
 - If `PUBLIC_DEMO_URL` is unset the secondary pill is absent and the primary stays centred. The page must not look broken without it.
@@ -41,18 +44,16 @@ The page is a broadsheet: a centred serif masthead, then left-aligned sections o
 
 ## 3. The plate
 
-The product is printed on paper: a parchment mat on the graphite page.
+The product is printed on paper: a parchment mat on the near-black page (the only warm surface, ADR-0015).
 
 - Plate: `--plate` (#E9E5DD), radius 8, 16 px mat on all sides, width up to 1120, centred, no shadow, no rotation, no perspective. It is the only light surface on the page besides the primary pill.
-- Inside: the board mock, keeping the app's own dark surfaces (`--surface-2` wells, `--surface-muted` cards), separated from the mat by a 1 px rule at 20 % `--plate-muted`.
-- Optional: a 24 px `assets/dark-logo.png` wordmark printed at the mat's top-left (the one place the black-ink asset is correct). If used, it sits outside the mock, not on top of it.
-- Three columns, five cards: one with a coloured tag, one with a mono due date, one with initials, one done, one plain. Titles are real work from the pilot (`Wire the digest`, `Fix the drop index`, `Export markdown`), never lorem ipsum.
-- Column names come from the app's `classic` template, so the mock matches what a user gets.
-- The mock is `aria-hidden`; the caption under the plate is the accessible description: `Plate 1 — a board from the pilot, five cards, one finished.` in `mono-sm` `--ink-subtle`, centred.
-- No hover, no drag, no cursor change: it is a printed plate, not a demo. The live board is the demo pill.
-- Below 640 px the plate keeps its 12 px mat and the mock becomes a rail inside it (`overflow-x: auto`, snap, `overscroll-behavior-x: contain`); the page never scrolls sideways.
+- Inside: `AppShot.astro` — a `<picture>` with `srcset` mobile (390×844) behind `(max-width: 639px)` and the desktop capture (1600×1000) as the default `<img>`, explicit `width`/`height`, `loading="eager"`, `fetchpriority="high"`, `decoding="async"`, one-sentence alt. Files: `src/assets/app-desktop.png`, `src/assets/app-mobile.png` — drop the real captures in, flip `APP_SHOT_PLACEHOLDER`, nothing else changes.
+- Until a capture ships, the classic placeholder frame renders: the plate's inner `--surface` + `--border`, 8 px radius, a stroke image glyph, mono caption `App screenshot — desktop 1600×1000` / `— mobile 390×844`, marked `data-app-shot="placeholder"`; a `NODE_ENV=production` content-lint fails on the marker. No fake UI, no skeleton board, no gradient.
+- Optional: a 24 px `assets/dark-logo.png` wordmark printed at the mat's top-left. It sits outside the shot, not on top of it.
+- The caption under the plate is the accessible description: `Plate 1 — the app itself, captured at 1600×1000 and 390×844.` in `mono-sm` `--ink-subtle`, centred.
+- No hover, no drag, no cursor change: it is a printed plate, not a demo.
 
-**Check:** exactly one plate on the page and none inside a card; 390 px has no page-level horizontal scroll; the third column is reachable by swiping inside the plate; the caption is read and the mock is not.
+**Check:** exactly one plate per landing page and none inside a card; 390 px has no page-level horizontal scroll (e2e `responsive.spec.ts`); the placeholder never reaches a production build.
 
 ## 4. The three lines
 
