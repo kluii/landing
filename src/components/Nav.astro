@@ -105,7 +105,7 @@ const links =
     </nav>
   </div>
   <noscript>
-    <nav class="nav-links" aria-label="Main (no JavaScript)">
+    <nav class="nav-noscript" aria-label="Main (no JavaScript)">
       {
         links.map((l) => (
           <a href={l.href} aria-current={l.current ? 'page' : undefined}>
@@ -297,6 +297,16 @@ const links =
     border-bottom: 1px solid var(--border-strong);
   }
 
+  /* Without JS the hamburger never opens, so the fallback nav is always visible. */
+  .nav-noscript {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-label);
+  }
+
   @media (max-width: 767px) {
     .nav-links {
       display: none;
@@ -304,6 +314,10 @@ const links =
 
     .nav-menu {
       display: inline-flex;
+    }
+
+    .nav-noscript {
+      display: flex;
     }
   }
 </style>
