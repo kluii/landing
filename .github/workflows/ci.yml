@@ -39,7 +39,9 @@ jobs:
       - run: npm run test:perf
 
       - name: Sanitize the artifact name
-        run: echo "ARTIFACT_NAME=dist-$(echo '${{ github.ref_name }}' | tr '/' '-')" >> "$GITHUB_ENV"
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: echo "ARTIFACT_NAME=dist-$(printf '%s' "$BRANCH" | tr '/' '-')" >> "$GITHUB_ENV"
 
       - name: Upload dist artifact (branch preview)
         uses: actions/upload-artifact@v4
