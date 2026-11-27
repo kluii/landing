@@ -11,7 +11,7 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import { INSTALL_COMMANDS, MCP_CONFIG } from '../src/data/snippets.ts';
 import { CLAIMS } from '../src/data/claims.ts';
 
@@ -129,20 +129,23 @@ function sidebarOrderFor(rel) {
 
 // Rewrites relative links to site paths; absolute http(s) links are untouched;
 // a link to a file outside the expected set fails the run (docs-sync.md §2 step 5).
-function rewriteLinks(md, relDoc, expectedSet, destVersion) {
+export function rewriteLinks(md, relDoc, expectedSet, destVersion) {
   return md.replace(/\[([^\]]*)\]\(([^)\s]+)([^)]*)\)/g, (whole, text, target, rest) => {
     if (/^(https?:|mailto:|#|\/)/.test(target)) return whole;
-    let resolved = resolve(APP_DOCS, dirname(relDoc), target);
+    // Anchors are not part of the file path: split first, resolve the file, keep the anchor.
+    const hash = target.indexOf('#');
+    const filePart = hash === -1 ? target : target.slice(0, hash);
+    const anchor = hash === -1 ? '' : target.slice(hash + 1);
+    let resolved = resolve(APP_DOCS, dirname(relDoc), filePart);
     let rel = relative(APP_DOCS, resolved);
     if (!expectedSet.has(rel)) {
-      resolved = resolve(APP_DOCS, target);
+      resolved = resolve(APP_DOCS, filePart);
       rel = relative(APP_DOCS, resolved);
     }
     if (!expectedSet.has(rel)) {
       fail(`link target not in the expected set: ${target} (in ${relDoc})`);
     }
-    const [file, anchor] = rel.split('#');
-    const sitePath = `/docs/${destVersion}/${file.replace(/\.md$/, '')}`;
+    const sitePath = `/docs/${destVersion}/${rel.replace(/\.md$/, '')}`;
     return `[${text}](${sitePath}${anchor ? `#${anchor}` : ''}${rest})`;
   });
 }
@@ -336,4 +339,7 @@ function run() {
   );
 }
 
-run();
+// Run only as the entry script, so tests can import the helpers (rewriteLinks).
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  run();
+}
