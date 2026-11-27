@@ -64,7 +64,7 @@ jobs:
       - run: npm run build
 
       - name: Serve the built site
-        run: npx astro preview --port 4321 & echo $! > /tmp/preview.pid
+        run: npx astro preview --host 127.0.0.1 --port 4321 & echo $! > /tmp/preview.pid
 
       - name: Wait for the preview
         run: |
